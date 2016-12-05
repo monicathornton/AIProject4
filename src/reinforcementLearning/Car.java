@@ -8,9 +8,10 @@ public abstract class Car {
 	int velocityx = 0;
 	int velocityy = 0;
 
-
 	// write method for collisionDetection(int accelx, int accely)
-		
+	
+	
+	
 		
 }
 

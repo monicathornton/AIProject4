@@ -11,14 +11,13 @@ public abstract class Driver {
     public Driver(){
 
         try {
-
             Handler consoleHandler = null;
             Handler fileHandler = null;
             //Creating consoleHandler and fileHandler
             consoleHandler = new ConsoleHandler();
             fileHandler = new FileHandler("./output.txt");
             System.out.println("NOTE THAT THE LOGGER OVERWRITES WHATEVER IS ALREADY IN OUTPUT!!!!!");
-            System.out.println("Used log level info for writing to file and fine for degbugging.");
+            System.out.println("Used log level info for writing to file and fine for debugging.");
 
             Formatter customFormater = new CustomFormatter();
 
@@ -28,7 +27,6 @@ public abstract class Driver {
 
             LOGGER.addHandler(fileHandler);
             fileHandler.setFormatter(customFormater);
-
 
             //Setting levels to handlers and LOGGER
             consoleHandler.setLevel(Level.ALL);
