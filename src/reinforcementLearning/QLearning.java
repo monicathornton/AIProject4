@@ -17,9 +17,6 @@ public class QLearning extends Driver {
 		printTrackInfo(algoName, trackName, crashName);
 	}
 	
-	
-	
-	
 	void train() {
 		// TODO Auto-generated method stub
 		
