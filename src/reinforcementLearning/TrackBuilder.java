@@ -56,10 +56,10 @@ public class TrackBuilder {
 	}
 	
 	// print out the racetrack
-	public void printTrack(String[][] thisTrack) {
-		for (int i = 0; i < thisTrack.length; i++) {
-			for (int j = 0; j < thisTrack[i].length; j++) {
-				System.out.print(thisTrack[i][j]);	
+	public void printTrack() {
+		for (int i = 0; i < racetrack.length; i++) {
+			for (int j = 0; j < racetrack[i].length; j++) {
+				System.out.print(racetrack[i][j]);	
 			}
 			System.out.println();
 		}		

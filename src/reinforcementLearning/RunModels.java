@@ -36,7 +36,7 @@ public class RunModels {
 				.println("Please pick from one of the following reinforcement learning algorithms");
 		System.out
 				.println("To race a car using Value Iteration, please type 'v'");
-		System.out.println("To race a car using SARSA, please type 's'");
+		System.out.println("To race a car using Q-learning, please type 'q'");
 
 		// holds the user's choice of algorithm
 		algoChoice = in.nextLine().toLowerCase();
@@ -46,7 +46,7 @@ public class RunModels {
 		System.out.println("To select the L-track please type 'l'");
 		System.out.println("To select the O-track please type 'o'");
 		System.out.println("To select the R-track please type 'r'");
-
+		System.out.println("To select the training track please type 't'");
 		// holds the user's choice of track
 		trackChoice = in.nextLine().toLowerCase();
 
@@ -68,8 +68,8 @@ public class RunModels {
 		case "v":
 			algoName = "Value Iteration";
 			break;
-		case "s":
-			algoName = "SARSA";
+		case "q":
+			algoName = "Q-learning";
 			break;
 		}
 
@@ -83,6 +83,9 @@ public class RunModels {
 		case "r":
 			trackName = "R-track";
 			break;
+		case "t":
+			trackName = "Training-track";
+			break;			
 		}
 
 		switch (crashChoice) {
@@ -99,7 +102,7 @@ public class RunModels {
 		trackFilePath = getTrack(trackName);
 
 		TrackBuilder track = new TrackBuilder(trackFilePath); 
-		
+		track.printTrack();
 		
 		// TODO: build arrays from the track file
 		// data = p.getData();
@@ -109,7 +112,7 @@ public class RunModels {
 
 			// call racecar in each algo (crashName tells us which crash variant to use) - pass data and crashName (or corresponding Boolean)
 			
-		} else if (algoChoice.equals("s")) {
+		} else if (algoChoice.equals("q")) {
 			// call algo with track data
 		} else {
 			// user chose to exit the program or typed their choice incorrectly
