@@ -15,10 +15,9 @@ public class TrackBuilder {
 	
 	public TrackBuilder(String dataFileLocation) throws IOException {
 		this.dataFileLocation = dataFileLocation;
-		buildTrack();
 	}
 	
-	public void buildTrack() {
+	public String[][] buildTrack() {
 		// read in data
 		String currentLine = null;
 		
@@ -53,6 +52,8 @@ public class TrackBuilder {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return racetrack;
 	}
 	
 	// print out the racetrack
