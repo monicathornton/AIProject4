@@ -73,3 +73,5 @@ local.properties
 .metadata/.plugins/org.eclipse.team.cvs.core/.running
 .metadata/.plugins/org.eclipse.core.resources/.snap
 .metadata/.plugins/org.eclipse.jdt.junit.core/history
+/bin/
+/bin/

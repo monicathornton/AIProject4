@@ -4,6 +4,7 @@ public abstract class Car {
 
 	int positionx = 0;
 	int positiony = 0;
+	
 	int velocityx = 0;
 	int velocityy = 0;
 
