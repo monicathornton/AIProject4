@@ -97,23 +97,24 @@ public class RunModels {
 			break;
 		}
 
-		algoChooser(algoName, trackName, crashName);
 		// TODO: call starting at racetracks data file
 		trackFilePath = getTrack(trackName);
 
 		TrackBuilder track = new TrackBuilder(trackFilePath); 
-		track.printTrack();
+		String[][] racetrack = track.buildTrack();
 		
-		// TODO: build arrays from the track file
-		// data = p.getData();
-
 		if (algoChoice.equals("v")) {
 			// call algo with track data
-
+			ValueIteration v = new ValueIteration(racetrack, algoName, trackName, crashName);
+			
+			
 			// call racecar in each algo (crashName tells us which crash variant to use) - pass data and crashName (or corresponding Boolean)
 			
 		} else if (algoChoice.equals("q")) {
 			// call algo with track data
+			QLearning q = new QLearning(racetrack, algoName, trackName, crashName);			
+			
+			
 		} else {
 			// user chose to exit the program or typed their choice incorrectly
 			System.out.println("Exiting program.");
@@ -123,23 +124,6 @@ public class RunModels {
 		// closes the scanner
 		in.close();
 
-	}
-
-	// TODO: move this to the algorithm classes, don't need 3 classes
-	public static void algoChooser(String algoName, String trackName,
-			String crashName) {
-		System.out.print("Running " + algoName + " on ");
-		trackChooser(trackName, crashName);
-
-	}
-
-	public static void trackChooser(String trackName, String crashName) {
-		System.out.print(trackName + " with ");
-		crashChooser(crashName);
-	}
-
-	public static void crashChooser(String crashName) {
-		System.out.println(crashName);
 	}
 
 	// gets the location of the data for classification (training and test sets
