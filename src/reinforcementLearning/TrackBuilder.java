@@ -6,17 +6,22 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class TrackBuilder {
-
+	// location of the racetrack
 	private String dataFileLocation;
+	
+	// gets the number of rows and cols from the data file (first line, comma separated)
 	private int rows = 0; 
 	private int cols = 0;
-	private String[][] racetrack;
 	
+	// 2-d array to store racetrack
+	private String[][] racetrack;
 	
 	public TrackBuilder(String dataFileLocation) throws IOException {
 		this.dataFileLocation = dataFileLocation;
 	}
 	
+	// reads in the track from file
+	// TODO: flip track
 	public String[][] buildTrack() {
 		// read in data
 		String currentLine = null;
