@@ -201,27 +201,4 @@ public class RunModels {
 			return null;
 		}
 	}
-
-	// public static ArrayList<String> arrayhashtostringlist(HashMap<String,
-	// ArrayList<Double>> res){
-	// ArrayList<String> output = new ArrayList<String>();
-	// for(Map.Entry<String, ArrayList<Double>> entry : res.entrySet()){
-	// String tempout = entry.getKey();
-	// for(Double e : entry.getValue()){
-	// tempout += "," + e;
-	// }
-	// output.add(tempout);
-	// }
-	// return output;
-	// }
-
-//	public static void writeResults(ArrayList<String> results)
-//			throws IOException {
-//		FileWriter writer = new FileWriter("results.txt");
-//		for (String str : results) {
-//			writer.write(str + "\n");
-//		}
-//		writer.close();
-//	}
-
 }
