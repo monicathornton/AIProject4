@@ -43,17 +43,18 @@ public class RunModels {
 
 
 		// gives the user a series of track choices, forces them to choose from the list
-		while (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t")) {		
+		while (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {		
 			System.out.println("***Please pick a racetrack***");
 			System.out.println("To select the L-track please type 'l'");
 			System.out.println("To select the O-track please type 'o'");
 			System.out.println("To select the R-track please type 'r'");
 			System.out.println("To select the training track please type 't'");
+			System.out.println("To select the simple track please type 's'");			
 		
 			// holds the user's choice of track
 			trackChoice = in.nextLine().toLowerCase();
 
-			if (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t")) {
+			if (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {
 				System.out.println(trackChoice + " is an invalid choice for the racetrack, please choose again.");
 				System.out.println();
 			} else {
@@ -107,7 +108,10 @@ public class RunModels {
 			break;
 		case "t":
 			trackName = "Training-track";
-			break;			
+			break;		
+		case "s":
+			trackName = "Simple-track";
+			break;	
 		}
 
 		switch (crashChoice) {
