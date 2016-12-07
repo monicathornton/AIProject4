@@ -116,10 +116,10 @@ public class RunModels {
 
 		switch (crashChoice) {
 		case "b":
-			crashName = "in situ restart.";
+			crashName = "in situ restart on crash.";
 			break;
 		case "w":
-			crashName = "restart at the beginning.";
+			crashName = "restart at the beginning on crash.";
 			break;
 		case "x":
 			System.out.println("Exiting program.");
