@@ -24,14 +24,10 @@ public class ValueIteration extends Driver {
 		this.crashName = crashName;
 		
 		
-		
-		
-		
-		
-		
-		
 		printTrackInfo(algoName, trackName, crashName);
 		Car c = new Car(track);
+		
+		// the below is all for testing, MT will remove after finished with car/driver
 		// newX, newY, oldX, oldY
 		track = c.moveCar(track, positionX, positionY, prevPosX, prevPosY);
 		prevPosX = positionX;
@@ -49,6 +45,33 @@ public class ValueIteration extends Driver {
 		printTrack(track);		
 		prevPosX = positionX;
 		prevPosY = positionY;
+		positionY++;
+
+		track = c.moveCar(track, positionX, positionY, prevPosX, prevPosY);
+		printTrack(track);		
+		prevPosX = positionX;
+		prevPosY = positionY;
+		positionY++;
+		
+		track = c.moveCar(track, positionX, positionY, prevPosX, prevPosY);
+		printTrack(track);		
+		prevPosX = positionX;
+		prevPosY = positionY;
+		positionX+=2;	
+		
+		track = c.moveCar(track, positionX, positionY, prevPosX, prevPosY);
+		printTrack(track);		
+		positionX++;
+		prevPosX = positionX;
+		prevPosY = positionY;
+
+		
+		track = c.moveCar(track, positionX, positionY, prevPosX, prevPosY);
+		printTrack(track);		
+		
+		
+		
+	
 	}
 	
 	
