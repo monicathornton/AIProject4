@@ -28,7 +28,7 @@ public class QLearning extends Driver {
 	
 	
 	
-	
+	// info for printing out for samples run
 	public void printTrackInfo(String algoName, String trackName,
 			String crashName) {
 		super.get_logger().log(Level.INFO, "Running " + algoName + " on " + trackName + " with " + crashName);
