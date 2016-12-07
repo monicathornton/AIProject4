@@ -20,7 +20,7 @@ public abstract class Driver {
             System.out.println("Used log level info for writing to file and fine for debugging.");
 
             Formatter customFormater = new CustomFormatter();
-
+            
             //Assigning handlers to LOGGER object
             LOGGER.addHandler(consoleHandler);
             consoleHandler.setFormatter(customFormater);
@@ -45,7 +45,23 @@ public abstract class Driver {
 
     abstract void train();
     abstract void test();
+ 
 
+	// print out the racetrack
+	public void printTrack(String[][] thisTrack) {
+		String thisLine = "";
+		
+		for (int i = 0; i < thisTrack.length; i++) {
+			thisLine = "";
+			
+			for (int j = 0; j < thisTrack[i].length; j++) {
+				thisLine += thisTrack[i][j];	
+			}
+			LOGGER.log(Level.INFO, thisLine);	
+		}
+		LOGGER.log(Level.INFO, "");
+	}
+   
 }
 
 class CustomFormatter extends Formatter{
