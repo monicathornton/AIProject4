@@ -62,8 +62,8 @@ public class Car {
 
 	
 	// place car on track at specified location
-	// TODO: make boolean so checks if finish line crossed
-	public void moveCar(int newX, int newY, int oldX, int oldY) {
+	// return true if finish line is crossed
+	public boolean moveCar(int newX, int newY, int oldX, int oldY) {
 		// car is currently at the position indicated by oldX, oldY
 		// update the track (at this point car can be on open track or start line)
 				
@@ -73,8 +73,6 @@ public class Car {
 			if (openLocs[i][0] == oldY && openLocs[i][1] == oldX) {				
 				// replace the space on the track with the appropriate symbol before replacing with new car loc 
 				track[oldY][oldX] = ".";
-				
-				System.out.println(track[oldY][oldX]);
 			}
 
 		} // end for: have checked if the car is in the open locs (so we can replace the right symbol when the car moves)
@@ -88,31 +86,48 @@ public class Car {
 			}
 		}// end for: have checked if the car is in the open locs (so we can replace the right symbol when the car
 		
+
+		
+		
+		
+		
+		
 		
 		boolean carCrash;
+		boolean crossedFinish = false ;
 		
 		// checks if the vehicle intersects with any walls on its path between the old and new location
 		carCrash = collisionDetection(newX, newY, oldX, oldY);
 		
 		if (!carCrash) {
+			
 			track[newY][newX] = "C";
+			
 			positionX = newX;
 			positionY = newY;
-			
+			crossedFinish = endRace(positionX, positionY); 
 		} else {
 			// places an X on the track to show where the car has crashed on its run
 			track[yCrash][xCrash] = "X";
-			crashHandler(crashChoice, oldX, oldY, newX, newY);
-						
+			crashHandler(crashChoice, oldX, oldY, newX, newY);		
 		}
+		
+		return crossedFinish;
 	
 	}	
-	
-	
+
 	// TODO: Check if we have crossed the finish line
-	
-	
-	
+	public boolean endRace(int positionX, int positionY) {
+		boolean crossedFinish = false;
+		for (int i = 0; i < finishLocs.length; i++) {
+			if (finishLocs[i][0] == positionY && finishLocs[i][1] == positionX) {
+				// are on the finish line
+				crossedFinish = true;
+			}
+		}
+		
+		return crossedFinish;
+	}
 	
 	//TODO: get new position and velocity
 	
@@ -235,8 +250,8 @@ public class Car {
 		for (int i = 0; i < track.length; i++) {
 			for (int j = 0; j < track[i].length; j++) {
 				if (track[i][j].equalsIgnoreCase("C")) {
-					xLoc = i;
-					yLoc = j;
+					yLoc = i;
+					xLoc = j;
 					carLoc[0] = yLoc;
 					carLoc[1] = xLoc;
 					return carLoc;
