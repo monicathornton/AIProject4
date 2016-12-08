@@ -1,15 +1,30 @@
 package reinforcementLearning;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.logging.*;
 
 public class Car {
 	// the racetrack for racing this car
 	private String[][] track; 
 	
+	// the choice of crash variant selected by the user
+	private String crashChoice;
+	
+	// logger for printing out info related to this car
+	Logger carLog = Logger.getLogger(Driver.class.getName());
+
+	// keeps track of x and y locs in case of collision
+	int xCrash = -1;
+	int yCrash = -1;
+	
+	// keeps track of the number of times the car has crashed
+	int carCrashes = 0;
+	
 	// TODO: bound positions based on map
 	// x and y positions of car at time t
-	int positionx = 0;
-	int positiony = 0;
+	int positionX;
+	int positionY;
 	
 	//TODO: bound velocity between -5 to 5
 	// x and y components of velocity at time t
@@ -20,6 +35,9 @@ public class Car {
 	int accelerationx = 0;
 	int accelerationy = 0;
 
+	int startLocX;
+	int startLocY;
+	
 	/*
 	 * The following store the locations of the open spots on the track, 
 	 * the start locations, the finish locations and the wall 
@@ -31,9 +49,9 @@ public class Car {
 	int [][] finishLocs;	
 	int [][] wallLocs;
 	
-	
-	public Car(String[][] track) throws IOException {
+	public Car(String[][] track, String crashChoice) throws IOException {
 		this.track = track;
+		this.crashChoice = crashChoice;
 		
 		// gets the open, start, finish and wall locations
 		openLocs = getOpenLocs();
@@ -44,17 +62,19 @@ public class Car {
 
 	
 	// place car on track at specified location
-	// print out the racetrack
+	// returns the updated track (with the updated car position)
 	public String[][] moveCar(String[][] track, int newX, int newY, int oldX, int oldY) {
 		// car is currently at the position indicated by oldX, oldY
 		// update the track (at this point car can be on open track or start line)
-		
+				
 		// check to see if the location of the car was on one of the open spaces
 		for (int i = 0; i < openLocs.length; i++) {			
 		
-			if (openLocs[i][0] == oldX && openLocs[i][1] == oldY) {
+			if (openLocs[i][0] == oldY && openLocs[i][1] == oldX) {				
 				// replace the space on the track with the appropriate symbol before replacing with new car loc 
-				track[oldX][oldY] = ".";
+				track[oldY][oldX] = ".";
+				
+				System.out.println(track[oldY][oldX]);
 			}
 
 		} // end for: have checked if the car is in the open locs (so we can replace the right symbol when the car moves)
@@ -62,9 +82,9 @@ public class Car {
 		
 		// check to see if the location of the car was on one of the start spaces
 		for (int i = 0; i < startLocs.length; i++) {
-			if (startLocs[i][0] == oldX && startLocs[i][1] == oldY) {
+			if (startLocs[i][0] == oldY && startLocs[i][1] == oldX) {
 			// replace the space on the track with the appropriate symbol before replacing with new car loc 
-				track[oldX][oldY] = "S";
+				track[oldY][oldX] = "S";
 			}
 		}// end for: have checked if the car is in the open locs (so we can replace the right symbol when the car
 		
@@ -74,48 +94,183 @@ public class Car {
 		// checks if the vehicle intersects with any walls on its path between the old and new location
 		carCrash = collisionDetection(newX, newY, oldX, oldY);
 		
-		
 		if (!carCrash) {
-			track[newX][newY] = "C";			
+			track[newY][newX] = "C";
+			positionX = newX;
+			positionY = newY;
+			
 		} else {
-			// TODO: get collision location
+			// places an X on the track to show where the car has crashed on its run
+			track[yCrash][xCrash] = "X";
+			crashHandler(crashChoice, oldX, oldY, newX, newY);
+						
 		}
-		
-		// TODO: Check if we have crossed the finish line
-		
-
-		
-		// car can only be placed on an open space or finish line
+	
 		return track;
 	}	
 	
 	
+	// TODO: Check if we have crossed the finish line
 	
-	// write method for collisionDetection(int accelx, int accely)
+	// TODO: deal with move car so does not give array out of bounds
 	
-
 	//TODO: get new position
 	
-	// TODO: crash 1
 	
-	// TODO: crash 2
-	
+	// TODO: set velocity to 0 on crash (in Driver?)
 	
 	//TODO: accel/decel (new position?)
 	
 	//TODO: non-determinism
 	
-	// TODO: count the number of crashes (some sort of crash handler)
+	// TODO: make some of these void?
 	
-	//TODO: control printing so is sometimes logger (need sample runs) and sometimes console (can see it move) 
+	// handles the two versions of crashing, as specified in the project requirements
+	public void crashHandler(String crashChoice, int oldX, int oldY, int newX, int newY) {
+		// increments the number of crashes
+		carCrashes++;
+		carLog.log(Level.INFO, "BOOM! Crashed into a wall at (" + xCrash + ", " + yCrash + ")");
+		
+		if (crashChoice.equalsIgnoreCase("b")) {
+			crashV1(oldX, oldY, xCrash, yCrash);
+			System.out.println("*****************" + xCrash);
+			System.out.println("*****************" + yCrash);
+		} else {
+			crashV2();
+		}
+	}
+	
+	// handles the "bad" version of crashing, where the car is placed at the nearest position on the track
+	// to where it crashed, and velocity is set to 0,0
+	public void crashV1(int oldX, int oldY, int crashX, int crashY) {
+		// TODO: Set velocity to 0,0
+		
+		int newX = crashX;
+		int newY = crashY;
+		
+		// TODO: check direction coming from, place on closest side
+		int dX = oldX - newX;
+		int dY = oldY - newY;
+		
+		// try > 0 direction (where the car came from)
+		if (dX != 0) {
+			if (dX > 0) {
+				if (!collisionDetection(newX + 1, newY, oldX, oldY)) {
+					newX++;
+				} else if (!collisionDetection(newX - 1, newY, oldX, oldY)) {
+					newX--;
+				} else if (!collisionDetection(newX, newY + 1, oldX, oldY)) {
+					newY++;
+				} else if (!collisionDetection(newX, newY - 1, oldX, oldY)) {
+					newY--;
+				}
+			} else {
+				// dx < 0
+				if (!collisionDetection(newX - 1, newY, oldX, oldY)) {
+					newX--;
+				} else if (!collisionDetection(newX + 1, newY, oldX, oldY)) {
+					newX++;
+				} else if (!collisionDetection(newX, newY + 1, oldX, oldY)) {
+					newY++;
+				} else if (!collisionDetection(newX, newY - 1, oldX, oldY)) {
+					newY--;
+				}				
+			}
+		} else {
+			// dY != 0
+			if (dY > 0) {
+				if (!collisionDetection(newX, newY + 1, oldX, oldY)) {
+					newY++;
+				} else if (!collisionDetection(newX, newY - 1, oldX, oldY)) {
+					newY--;
+				} else if (!collisionDetection(newX + 1, newY, oldX, oldY)) {
+					newX++;
+				} else if (!collisionDetection(newX - 1, newY, oldX, oldY)) {
+					newX--;
+				}
+			} else {
+				if (!collisionDetection(newX, newY - 1, oldX, oldY)) {
+					newY--;
+				} else if (!collisionDetection(newX, newY + 1, oldX, oldY)) {
+					newY++;
+				} else if (!collisionDetection(newX + 1, newY, oldX, oldY)) {
+					newX++;
+				} else if (!collisionDetection(newX - 1, newY, oldX, oldY)) {
+					newX--;
+				}
+			}
+		} // end if
+		
+		if (newX < track.length && newX >= 0 && newY < track.length && newY >= 0) {
+			track[newY][newX] = "C";		
+		} else {
+			// TODO: handle this
+			
+		}
+		
+		
+		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
+	
+		positionX = newX;
+		positionY = newY;
+	}	
+	
+	// handles the "worse" version of crashing, where the car is placed back at the original starting position
+	// and velocity is set to 0,0
+	public void crashV2() {
+		// TODO: Set velocity to 0,0
+		
+		// put car back at original starting location
+		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
+		track[startLocY][startLocX] = "C";
+		
+		//TODO: set position too, look for other places to set position
+	}		
 	
 	
 	
+	// get the location of the car on the map
+	public int[] getCarLocation(String[][] track) {
+		// xLoc is in position 0, yLoc is in position 1
+		int[] carLoc = new int[2];
+		int xLoc;
+		int yLoc;
+		
+		// if car is found, return location as int array
+		for (int i = 0; i < track.length; i++) {
+			for (int j = 0; j < track[i].length; j++) {
+				if (track[i][j].equalsIgnoreCase("C")) {
+					xLoc = i;
+					yLoc = j;
+					carLoc[0] = yLoc;
+					carLoc[1] = xLoc;
+					return carLoc;
+				}				
+			}
+		}
+		
+		// else return null
+		return null;
+	}
 	
+	// places the car at a random location on the starting line
+	public String[][] putCarAtStart() {
+		
+		Random rand = new Random();
+		int randomNum = rand.nextInt(startLocs.length);			
+		
+		startLocX = startLocs[randomNum][0];
+		startLocY = startLocs[randomNum][1];
+		
+		track[startLocY][startLocX] = "C";
+		
+		return track;
+	}
 	
-
 	// gets the locations for the starting line
-	public int[][] getStartLocs() {
+	// note: this is only used to get a valid location on the starting line, this information is 
+	// not directly accessible to the learner
+	private int[][] getStartLocs() {
 		// array to store start locations (xLoc element 0, yLoc element 1)
 		int[][] startLocs;
 		// keep track of the number of times a start loc is encountered
@@ -140,7 +295,8 @@ public class Car {
 	}
 	
 	// gets the locations for the open spaces on the track
-	public int[][] getOpenLocs() {
+	// TODO: we are not using this currently, get rid of if we don't end up needing
+	private int[][] getOpenLocs() {
 		// keep track of the number of times a start loc is encountered
 		int openLocsCount = 0;
 		
@@ -163,7 +319,9 @@ public class Car {
 	}
 	
 	// gets the locations for the finish line
-	public int[][] getFinishLocs() {
+	// note: this is only used to check when we have crossed the finish line, this information is not
+	// directly accessible to the learner
+	private int[][] getFinishLocs() {
 		// keep track of the number of times a start loc is encountered
 		int finishLocsCount = 0;
 		
@@ -175,7 +333,7 @@ public class Car {
 					finishLocsCount++;
 				}
 			} 
-		} // end for: have counted the number of times the start loc symbol (S) has been encountered		
+		} // end for: have counted the number of times the finish loc symbol (F) has been encountered		
 		
 		finishLocs = new int[finishLocsCount][finishLocsCount]; 
 		
@@ -186,7 +344,9 @@ public class Car {
 	}	
 	
 	// gets the locations for the walls
-	public int[][] getWallLocs() {
+	// note: this is only used to check when we have crashed into a wall, this information is not directly
+	// accessible to the learner
+	private int[][] getWallLocs() {
 		// array to store finish locations (xLoc element 0, yLoc element 1)
 		// keep track of the number of times a start loc is encountered
 		int wallLocsCount = 0;
@@ -271,11 +431,10 @@ public class Car {
 	    	// checks to see if the car collides with a wall
 	    	for (int i = 0; i < wallLocs.length; i++) {
 		    	// check if this x and y location corresponds to a wall
-		    	if (wallLocs[i][0] == x && wallLocs[i][1] == y) {
-		    		//TODO: change this to logger
-		    		System.out.println("BOOM! Crashed into a wall");
-		    			// the car has crashed into a wall
-		    			return true;
+		    	if (wallLocs[i][0] == y && wallLocs[i][1] == x) {
+		    		xCrash = x;
+		    		yCrash = y;
+		    		return true;
 					}	    		
 	    	}
 

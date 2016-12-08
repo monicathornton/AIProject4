@@ -136,13 +136,13 @@ public class RunModels {
 		
 		if (algoChoice.equals("v")) {
 			// call algo with track data
-			ValueIteration v = new ValueIteration(racetrack, algoName, trackName, crashName);
+			Driver v = new ValueIteration(racetrack, algoName, trackName, crashName, crashChoice);
 			
 			// TODO: call racecar in each algo (crashName tells us which crash variant to use) - pass data and crashName (or corresponding Boolean)
 			
 		} else if (algoChoice.equals("q")) {
 			// call algo with track data
-			QLearning q = new QLearning(racetrack, algoName, trackName, crashName);			
+			Driver q = new QLearning(racetrack, algoName, trackName, crashName);			
 			
 		} 
 
