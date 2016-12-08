@@ -17,7 +17,6 @@ public class TrackBuilder {
 	}
 	
 	// reads in the track from file
-	// TODO: flip track
 	public String[][] buildTrack() {
 		// read in data
 		String currentLine = null;
