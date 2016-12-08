@@ -15,27 +15,28 @@ public class Car {
 	Logger carLog = Logger.getLogger(Driver.class.getName());
 
 	// keeps track of x and y locs in case of collision
-	int xCrash = -1;
-	int yCrash = -1;
+	private int xCrash = -1;
+	private int yCrash = -1;
 	
 	// keeps track of the number of times the car has crashed
-	int carCrashes = 0;
+	public int carCrashes = 0;
 	
 	// x and y positions of car at time t
-	int positionX;
-	int positionY;
+	public int positionX;
+	public int positionY;
 	
 	//TODO: bound velocity between -5 to 5
 	// x and y components of velocity at time t
-	int velocityx = 0;
-	int velocityy = 0;
+	public int velocityX = 0;
+	public int velocityY = 0;
 
 	//TODO: acceleration can only be -1, 0 or 1
 	int accelerationx = 0;
 	int accelerationy = 0;
 
-	int startLocX;
-	int startLocY;
+	// holds the location where the car started
+	public int startLocX;
+	public int startLocY;
 	
 	/*
 	 * The following store the locations of the open spots on the track, 
@@ -61,8 +62,8 @@ public class Car {
 
 	
 	// place car on track at specified location
-	// returns the updated track (with the updated car position)
-	public String[][] moveCar(String[][] track, int newX, int newY, int oldX, int oldY) {
+	// TODO: make boolean so checks if finish line crossed
+	public void moveCar(int newX, int newY, int oldX, int oldY) {
 		// car is currently at the position indicated by oldX, oldY
 		// update the track (at this point car can be on open track or start line)
 				
@@ -105,25 +106,17 @@ public class Car {
 						
 		}
 	
-		return track;
 	}	
 	
 	
 	// TODO: Check if we have crossed the finish line
 	
-	// TODO: deal with move car so does not give array out of bounds
-	
-	//TODO: get new position
 	
 	
-	// TODO: set velocity to 0 on crash (in Driver?)
 	
-	//TODO: accel/decel (new position?)
+	//TODO: get new position and velocity
 	
-	//TODO: non-determinism
-	
-	// TODO: make some of these void?
-	
+		
 	// handles the two versions of crashing, as specified in the project requirements
 	public void crashHandler(String crashChoice, int oldX, int oldY, int newX, int newY) {
 		// increments the number of crashes
@@ -142,7 +135,8 @@ public class Car {
 	// handles the "bad" version of crashing, where the car is placed at the nearest position on the track
 	// to where it crashed, and velocity is set to 0,0
 	public void crashV1(int oldX, int oldY, int crashX, int crashY) {
-		// TODO: Set velocity to 0,0
+		velocityX = 0;
+		velocityY = 0; 
 		
 		int newX = crashX;
 		int newY = crashY;
@@ -217,6 +211,8 @@ public class Car {
 	// and velocity is set to 0,0
 	public void crashV2() {
 		// TODO: Set velocity to 0,0
+		velocityX = 0;
+		velocityY = 0;
 		
 		// put car back at original starting location
 		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
@@ -253,7 +249,7 @@ public class Car {
 	}
 	
 	// places the car at a random location on the starting line
-	public String[][] putCarAtStart() {
+	public void putCarAtStart() {
 		Random rand = new Random();
 		int randomNum = rand.nextInt(startLocs.length);			
 		
@@ -263,7 +259,6 @@ public class Car {
 		track[startLocY][startLocX] = "C";
 		carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
 		
-		return track;
 	}
 	
 	// gets the locations for the starting line

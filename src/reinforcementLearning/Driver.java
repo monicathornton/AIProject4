@@ -47,9 +47,18 @@ public abstract class Driver {
     abstract void test();
  
 
+	//TODO: accel/decel (new position?)
+	
+	//TODO: non-determinism
+    
+    
+    
+    
 	// print out the racetrack
-	public void printTrack(String[][] thisTrack) {
+	public void printTrack(String[][] thisTrack, int t, Car c) {
 		String thisLine = "";
+		
+		LOGGER.log(Level.INFO, "Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");	
 		
 		for (int i = 0; i < thisTrack.length; i++) {
 			thisLine = "";
