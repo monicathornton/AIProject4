@@ -21,7 +21,6 @@ public class Car {
 	// keeps track of the number of times the car has crashed
 	int carCrashes = 0;
 	
-	// TODO: bound positions based on map
 	// x and y positions of car at time t
 	int positionX;
 	int positionY;
@@ -208,7 +207,6 @@ public class Car {
 			
 		}
 		
-		
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
 		positionX = newX;
@@ -224,9 +222,10 @@ public class Car {
 		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
 		track[startLocY][startLocX] = "C";
 		
-		//TODO: set position too, look for other places to set position
-	}		
-	
+		//TODO: test this
+		positionX = startLocX;
+		positionY = startLocY;
+	}
 	
 	
 	// get the location of the car on the map
@@ -255,14 +254,14 @@ public class Car {
 	
 	// places the car at a random location on the starting line
 	public String[][] putCarAtStart() {
-		
 		Random rand = new Random();
 		int randomNum = rand.nextInt(startLocs.length);			
 		
-		startLocX = startLocs[randomNum][0];
-		startLocY = startLocs[randomNum][1];
+		startLocY = startLocs[randomNum][0];
+		startLocX = startLocs[randomNum][1];
 		
 		track[startLocY][startLocX] = "C";
+		carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
 		
 		return track;
 	}
