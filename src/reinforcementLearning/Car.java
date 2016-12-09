@@ -30,10 +30,6 @@ public class Car {
 	public int velocityX = 0;
 	public int velocityY = 0;
 
-	//TODO: acceleration can only be -1, 0 or 1
-	int accelerationx = 0;
-	int accelerationy = 0;
-
 	// holds the location where the car started
 	public int startLocX;
 	public int startLocY;
@@ -66,7 +62,13 @@ public class Car {
 	public boolean moveCar(int newX, int newY, int oldX, int oldY) {
 		// car is currently at the position indicated by oldX, oldY
 		// update the track (at this point car can be on open track or start line)
-				
+		
+		System.out.println(newX);
+		System.out.println(newY);
+		System.out.println(oldX);
+		System.out.println(oldY);
+		
+		
 		// check to see if the location of the car was on one of the open spaces
 		for (int i = 0; i < openLocs.length; i++) {			
 		
@@ -87,12 +89,6 @@ public class Car {
 		}// end for: have checked if the car is in the open locs (so we can replace the right symbol when the car
 		
 
-		
-		
-		
-		
-		
-		
 		boolean carCrash;
 		boolean crossedFinish = false ;
 		
@@ -100,7 +96,6 @@ public class Car {
 		carCrash = collisionDetection(newX, newY, oldX, oldY);
 		
 		if (!carCrash) {
-			
 			track[newY][newX] = "C";
 			
 			positionX = newX;
@@ -116,7 +111,7 @@ public class Car {
 	
 	}	
 
-	// TODO: Check if we have crossed the finish line
+	// Checks if the car has crossed the finish line
 	public boolean endRace(int positionX, int positionY) {
 		boolean crossedFinish = false;
 		for (int i = 0; i < finishLocs.length; i++) {
@@ -129,7 +124,40 @@ public class Car {
 		return crossedFinish;
 	}
 	
-	//TODO: get new position and velocity
+	// TODO: bound this
+	public int updateVelocityX(int accelX) {
+		
+		velocityX = velocityX + accelX;
+		
+		return velocityX;
+	}
+
+	// TODO: bound this
+	public int updateVelocityY(int accelY) {
+		
+		velocityY = velocityY + accelY;
+			
+		return velocityY;
+	}
+	
+	//TODO: get position
+	//TODO: bound this, or bounded by walls? play around with this to check
+	public boolean newPosition(int accelX, int accelY) {
+		boolean raceFinished; 
+		int oldX = positionX;
+		int oldY = positionY;
+		
+		positionY = positionY + updateVelocityY(accelY);
+		positionX = positionX + updateVelocityX(accelX);		
+		
+		raceFinished = moveCar(positionX, positionY, oldX, oldY);
+		
+		return raceFinished;
+	}
+	
+	//TODO: get velocity
+	
+	//TODO: get acceleration
 	
 		
 	// handles the two versions of crashing, as specified in the project requirements
@@ -140,8 +168,6 @@ public class Car {
 		
 		if (crashChoice.equalsIgnoreCase("b")) {
 			crashV1(oldX, oldY, xCrash, yCrash);
-			System.out.println("*****************" + xCrash);
-			System.out.println("*****************" + yCrash);
 		} else {
 			crashV2();
 		}

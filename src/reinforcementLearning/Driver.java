@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.util.logging.*;
 
 public abstract class Driver {
-
+    
+    int prevPosX;
+    int prevPosY;
+	
     private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
-
+        
     public Driver(){
 
         try {
@@ -51,14 +54,27 @@ public abstract class Driver {
 	
 	//TODO: non-determinism
     
+    // bound velocity, acceleration
     
+	//TODO: acceleration can only be -1, 0 or 1
     
+    public boolean drive(Car c, int accelX, int accelY) {
+    	
+    	boolean raceOver = false;
+     	
+		//TODO: fix the below move / new position
+		raceOver = c.newPosition(accelX, accelY);
+		
+		return raceOver;
+    }
     
+   
 	// print out the racetrack
-	public void printTrack(String[][] thisTrack, int t, Car c) {
+	public void printTrack(String[][] thisTrack, int t, Car c, int accelerationX, int accelerationY) {
 		String thisLine = "";
 		
 		LOGGER.log(Level.INFO, "Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");	
+		LOGGER.log(Level.INFO, "Acceleration at time step t = " + t + " is (" + accelerationX + "," + accelerationY + ")");
 		
 		for (int i = 0; i < thisTrack.length; i++) {
 			thisLine = "";

@@ -15,6 +15,10 @@ public class ValueIteration extends Driver {
 	private int prevPosY;
 	private String crashChoice;
 	
+	int accelerationX;
+	int accelerationY;
+	
+	
 	//TODO: clean this up when done testing
 	public ValueIteration(String[][] track, String algoName, String trackName, String crashName, String crashChoice) throws IOException {
 		this.track = track;
@@ -24,7 +28,7 @@ public class ValueIteration extends Driver {
 		this.crashChoice = crashChoice;
 				
 		printTrackInfo(algoName, trackName, crashName);
-		// TODO: increment t
+
 		int t = 0;
 		
 		Car c = new Car(track, crashChoice);
@@ -45,19 +49,19 @@ public class ValueIteration extends Driver {
 		
 		while (!raceOver) {
 			// after we make move, check if race is over (value of move car - or whatever we send from Driver will be true)
-			
-			raceOver = c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-			printTrack(track, t, c);
+			raceOver = drive(c, accelerationX, accelerationY);
+			printTrack(track, t, c, accelerationX, accelerationY);
 			t++;
-			prevPosX = c.positionX;
-			prevPosY = c.positionY;
-			c.positionY -= 1;	
-			
+			accelerationY = -1;
 		}
 		
-		if (raceOver) {
-			super.get_logger().log(Level.INFO, "Car has finished race at time " + t);
-		}
+		super.get_logger().log(Level.INFO, "Car has finished race at time " + t);
+		
+		//TODO race over
+		//raceOver = c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);	
+		
+			
+
 		
 		
 		
