@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.logging.*;
 
 public abstract class Driver {
-    
-    int prevPosX;
-    int prevPosY;
 	
     private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
         
@@ -50,19 +47,13 @@ public abstract class Driver {
     abstract void test();
  
 
-	//TODO: accel/decel (new position?)
-	
+		
 	//TODO: non-determinism
-    
-    // bound velocity, acceleration
-    
-	//TODO: acceleration can only be -1, 0 or 1
-    
+        
     public boolean drive(Car c, int accelX, int accelY) {
     	
     	boolean raceOver = false;
      	
-		//TODO: fix the below move / new position
 		raceOver = c.newPosition(accelX, accelY);
 		
 		return raceOver;

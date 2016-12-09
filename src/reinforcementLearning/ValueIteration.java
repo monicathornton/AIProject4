@@ -6,18 +6,22 @@ import java.util.logging.Level;
 import reinforcementLearning.Driver;
 
 public class ValueIteration extends Driver {
+	// holds the racetrack and variables selected by the user
 	private String[][] track;
 	private String algoName;
 	private String trackName;
 	private String crashName;
-	
-	private int prevPosX;
-	private int prevPosY;
 	private String crashChoice;
 	
+	// the previous position of the car (used for collision detection and map updates)
+	private int prevPosX;
+	private int prevPosY;
+
+	// acceleration/deceleration (as determined by the algorithm)
 	int accelerationX;
 	int accelerationY;
 	
+	int[] accelVals = {-1, 0, 1};
 	
 	//TODO: clean this up when done testing
 	public ValueIteration(String[][] track, String algoName, String trackName, String crashName, String crashChoice) throws IOException {
