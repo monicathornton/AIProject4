@@ -194,10 +194,14 @@ public class Car {
 		int newX = crashX;
 		int newY = crashY;
 		
-		// tries to 
+		// uses the difference between the old and new position to determine the position the car was heading
 		int dX = oldX - newX;
 		int dY = oldY - newY;
 		
+		
+		// per the project specifications, on crash place the car at the nearest point on the track to the 
+		// place where it crashed
+		// updates either the x or y position, based on the car's most recent position
 		// try > 0 direction (where the car came from)
 		if (dX != 0) {
 			if (dX > 0) {
@@ -247,15 +251,14 @@ public class Car {
 			}
 		} // end if
 		
+		// makes sure the newX and/or Y values are valid choices
 		if (newX < track.length && newX >= 0 && newY < track.length && newY >= 0) {
 			track[newY][newX] = "C";		
-		} else {
-			// TODO: handle this
-			
-		}
+		} 
 		
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
+		// updates the x and y position
 		positionX = newX;
 		positionY = newY;
 	}	
@@ -263,7 +266,6 @@ public class Car {
 	// handles the "worse" version of crashing, where the car is placed back at the original starting position
 	// and velocity is set to 0,0
 	public void crashV2() {
-		// TODO: Set velocity to 0,0
 		velocityX = 0;
 		velocityY = 0;
 		
@@ -271,11 +273,9 @@ public class Car {
 		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
 		track[startLocY][startLocX] = "C";
 		
-		//TODO: test this
 		positionX = startLocX;
 		positionY = startLocY;
 	}
-	
 	
 	// get the location of the car on the map
 	public int[] getCarLocation(String[][] track) {
@@ -297,7 +297,7 @@ public class Car {
 			}
 		}
 		
-		// else return null
+		// return null if car is not found
 		return null;
 	}
 	
@@ -306,9 +306,11 @@ public class Car {
 		Random rand = new Random();
 		int randomNum = rand.nextInt(startLocs.length);			
 		
+		// gets a random starting location from the list of available starting locations
 		startLocY = startLocs[randomNum][0];
 		startLocX = startLocs[randomNum][1];
 		
+		// puts the car on the track
 		track[startLocY][startLocX] = "C";
 		carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
 		
@@ -342,7 +344,8 @@ public class Car {
 	}
 	
 	// gets the locations for the open spaces on the track
-	// TODO: we are not using this currently, get rid of if we don't end up needing
+	// note: this is only used to print the map, this information is 
+	// not directly accessible to the learner
 	private int[][] getOpenLocs() {
 		// keep track of the number of times a start loc is encountered
 		int openLocsCount = 0;
@@ -500,8 +503,6 @@ public class Car {
 		// car has not collided with a wall
 		return false;
 	}
-	
-	
-	
+
 }
 
