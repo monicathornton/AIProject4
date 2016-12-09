@@ -25,7 +25,6 @@ public class Car {
 	public int positionX;
 	public int positionY;
 	
-	//TODO: bound velocity between -5 to 5
 	// x and y components of velocity at time t
 	public int velocityX = 0;
 	public int velocityY = 0;
@@ -62,13 +61,7 @@ public class Car {
 	public boolean moveCar(int newX, int newY, int oldX, int oldY) {
 		// car is currently at the position indicated by oldX, oldY
 		// update the track (at this point car can be on open track or start line)
-		
-		System.out.println(newX);
-		System.out.println(newY);
-		System.out.println(oldX);
-		System.out.println(oldY);
-		
-		
+				
 		// check to see if the location of the car was on one of the open spaces
 		for (int i = 0; i < openLocs.length; i++) {			
 		
@@ -89,24 +82,31 @@ public class Car {
 		}// end for: have checked if the car is in the open locs (so we can replace the right symbol when the car
 		
 
-		boolean carCrash;
+		// booleans used to indicate if car has crashed and if finish line has been crossed 
+		boolean carCrash = false;
 		boolean crossedFinish = false ;
 		
 		// checks if the vehicle intersects with any walls on its path between the old and new location
 		carCrash = collisionDetection(newX, newY, oldX, oldY);
 		
+		// if the car has not crashed, update the map with the new position of the car
 		if (!carCrash) {
 			track[newY][newX] = "C";
 			
 			positionX = newX;
 			positionY = newY;
+			
+			// checks if the car has crossed the finish line
 			crossedFinish = endRace(positionX, positionY); 
 		} else {
 			// places an X on the track to show where the car has crashed on its run
 			track[yCrash][xCrash] = "X";
+			
+			// calls the crash handler, which deals with the specifics of the car crash 
 			crashHandler(crashChoice, oldX, oldY, newX, newY);		
 		}
 		
+		// returns true if race is over, false otherwise
 		return crossedFinish;
 	
 	}	
@@ -114,6 +114,8 @@ public class Car {
 	// Checks if the car has crossed the finish line
 	public boolean endRace(int positionX, int positionY) {
 		boolean crossedFinish = false;
+		
+		// checks if the current location is in the array of finish line locations
 		for (int i = 0; i < finishLocs.length; i++) {
 			if (finishLocs[i][0] == positionY && finishLocs[i][1] == positionX) {
 				// are on the finish line
@@ -121,51 +123,61 @@ public class Car {
 			}
 		}
 		
+		// returns true if car has crossed the finish line, false otherwise
 		return crossedFinish;
 	}
 	
-	// TODO: bound this
+	// updates the x component of velocity according to the project specifications, adds 
+	// acceleration to velocity before the position is updated
+	// valid velocity values are between -5 and 5
 	public int updateVelocityX(int accelX) {
-		
-		velocityX = velocityX + accelX;
+		// only accelerate or decelerate if velocity is in range -5 to 5 (inclusive), 
+		// otherwise velocity is unchanged
+		if (velocityX <= 5 || velocityX >= -5) {
+			velocityX = velocityX + accelX;
+		} 
 		
 		return velocityX;
 	}
 
-	// TODO: bound this
+	// updates the y component of velocity according to the project specifications, adds 
+	// acceleration to velocity before the position is updated
+	// valid velocity values are between -5 and 5
 	public int updateVelocityY(int accelY) {
-		
-		velocityY = velocityY + accelY;
+		if (velocityY <= 5 || velocityY >= -5) {
+			velocityY = velocityY + accelY;
+		}
 			
 		return velocityY;
 	}
 	
-	//TODO: get position
-	//TODO: bound this, or bounded by walls? play around with this to check
+	// using the updated velocity, updates the position of the car
+	// returns true if race is finished, false otherwise
 	public boolean newPosition(int accelX, int accelY) {
-		boolean raceFinished; 
+	
+		boolean raceFinished;
+		
+		// holds the position of the car before it moves
 		int oldX = positionX;
 		int oldY = positionY;
 		
+		// updates the x and y positions of the car based on the velocity
 		positionY = positionY + updateVelocityY(accelY);
 		positionX = positionX + updateVelocityX(accelX);		
 		
+		// moves the car
 		raceFinished = moveCar(positionX, positionY, oldX, oldY);
 		
 		return raceFinished;
 	}
-	
-	//TODO: get velocity
-	
-	//TODO: get acceleration
-	
 		
 	// handles the two versions of crashing, as specified in the project requirements
 	public void crashHandler(String crashChoice, int oldX, int oldY, int newX, int newY) {
 		// increments the number of crashes
 		carCrashes++;
-		carLog.log(Level.INFO, "BOOM! Crashed into a wall at (" + xCrash + ", " + yCrash + ")");
-		
+		carLog.log(Level.INFO, "BOOM! Crashed into a wall at (" + xCrash + ", " + yCrash + "). Crash # " + carCrashes);
+	
+		// calls appropriate crash method based on user specified crash choice 
 		if (crashChoice.equalsIgnoreCase("b")) {
 			crashV1(oldX, oldY, xCrash, yCrash);
 		} else {
@@ -182,7 +194,7 @@ public class Car {
 		int newX = crashX;
 		int newY = crashY;
 		
-		// TODO: check direction coming from, place on closest side
+		// tries to 
 		int dX = oldX - newX;
 		int dY = oldY - newY;
 		
