@@ -1,5 +1,29 @@
 package reinforcementLearning;
 
+/*
+procedure value_iteration(P,r, θ )
+inputs:
+	P is state transition function specifying P(s|a,s')
+	r is a reward function R(s, a,s')
+	θ a threshold θ > 0
+returns:
+	π[s] approximately optimal policy
+	V[s] value function
+data structures:
+	Vk [s] a sequence of value functions
+
+###############################
+	begin
+		for k = 1 : ∞
+			for each state s
+				Vk [s] = maxa SUM P(s|a,s)(R(s, a,s) + γ Vk−1[s])
+			if ∀s |Vk (s) − Vk−1(s)| < θ
+				for each state s
+					π(s) = arg maxa SUM P(s|a,s)(R(s, a,s) + γ Vk−1[s])
+		return π, Vk
+	end
+###############################
+ */
 import java.io.IOException;
 import java.util.logging.Level;
 
