@@ -51,6 +51,7 @@ public class ValueIteration extends Driver {
 		
 		boolean raceOver = false;
 		
+		// TODO: start at beginning and loop this to see if we come up with any errors (try on every track, with random accel vals) 
 		while (!raceOver) {
 			// after we make move, check if race is over (value of move car - or whatever we send from Driver will be true)
 			raceOver = drive(c, accelerationX, accelerationY);
