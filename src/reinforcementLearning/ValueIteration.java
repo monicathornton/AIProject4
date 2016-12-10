@@ -25,6 +25,7 @@ data structures:
 ###############################
  */
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import reinforcementLearning.Driver;
@@ -36,7 +37,13 @@ public class ValueIteration extends Driver {
 	private String trackName;
 	private String crashName;
 	private String crashChoice;
-	
+
+	private HashMap states = new HashMap<String, Double>();
+	private final double successfulMove = .80;
+	private double finishCellReward = 0;
+	private double normalCellRewoard = -1;
+	private int[] velocityPossibilities = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
+
 	// the previous position of the car (used for collision detection and map updates)
 	private int prevPosX;
 	private int prevPosY;
@@ -69,89 +76,17 @@ public class ValueIteration extends Driver {
 		c.positionY = 2;
 		prevPosX = c.positionX;
 		prevPosY = c.positionY;
-		
-		// the below is all for testing, MT will remove after finished with car/driver
-		//int newX, int newY, int oldX, int oldY
-		
-		boolean raceOver = false;
-		
-		// TODO: start at beginning and loop this to see if we come up with any errors (try on every track, with random accel vals) 
-		while (!raceOver) {
-			// after we make move, check if race is over (value of move car - or whatever we send from Driver will be true)
-			raceOver = drive(c, accelerationX, accelerationY);
-			printTrack(track, t, c, accelerationX, accelerationY);
-			t++;
-			accelerationY = -1;
-		}
-		
-		super.get_logger().log(Level.INFO, "Car has finished race at time " + t);
-		
-		//TODO race over
-		//raceOver = c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);	
-		
-			
+		printTrackConsole(track, t, c, accelerationX, accelerationY);
 
-		
-		
-		
-		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY += 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY+= 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY += 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY += 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionX += 2;	
-		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY -= 1;		
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY -= 1;	
-		
-		
+		train();
+
 	
 	}
 	
 	
 	void train() {
-		// TODO Auto-generated method stub
-		
+		createStates();
+		System.out.println("HI");
 	}
 
 	void test() {
@@ -165,7 +100,46 @@ public class ValueIteration extends Driver {
 			String crashName) {
 		super.get_logger().log(Level.INFO, "Running " + algoName + " on " + trackName + " with " + crashName);
 		super.get_logger().log(Level.INFO, "");		
-	}	
-		
+	}
+
+
+	/*
+		Create a dictionary of states, key =cell,velocity value=utility
+ 	*/
+	private void createStates(){
+		// for each cell not a wall cell
+		for (int row = 0; row < track.length - 1; row++){
+			for (int col = 0; col < track.length - 1; col++){
+					// for each possible combination of velocities in x and y direction
+					for (int x = 0; x < velocityPossibilities.length -1; x++){
+						for (int j = 0; j < velocityPossibilities.length -1; j++){
+
+
+							if (track[row][col].equals("#")) {
+								states.put(String.format("c(%s,%s)v(%s,%s)", row, col, x, j), -10.0);
+							}
+							else if(track[row][col].equals("F")){
+								states.put(String.format("c(%s,%s)v(%s,%s)", row, col, x, j), +10.0);
+							}
+							else {
+								states.put(String.format("c(%s,%s)v(%s,%s)", row, col, x, j), 0.0);
+							}
+
+					}
+				}
+			}
+		}
+	}
+
+	private boolean successfulMove(String curLocation, String wantedLocation){
+		double d = Math.random();
+
+		if (d < successfulMove){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 }
 
