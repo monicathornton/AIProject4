@@ -2,12 +2,13 @@ package reinforcementLearning;
 
 // Logging examples obtained from https://examples.javacodegeeks.com/core-java/util/logging/java-util-logging-example/
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.*;
 
 public abstract class Driver {
-
+	
     private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
-
+        
     public Driver(){
 
         try {
@@ -46,10 +47,36 @@ public abstract class Driver {
     abstract void train();
     abstract void test();
  
+		
+	//TODO: change so car just has to cross finish line, not stop there
+    // Given the acceleration value from the algorithm (Value Iteration or Q-learning), drive the racecar.
+    // There is a non-deterministic element to acceleration, where there is a 20% chance that the acceleration
+    // will fail and the velocity will remain unchanged
+    public boolean drive(Car c, int accelX, int accelY) {
+    	
+        Random rando = new Random();
+       	int randomNum = rando.nextInt(10);    	
 
+       	// deals with the non-determinism, where 20% of time acceleration/deceleration fails
+    	if (randomNum == 7 && randomNum == 3) {
+    		accelX = 0;
+    		accelY = 0;
+    	}
+       	
+    	boolean raceOver = false;
+     	
+		raceOver = c.newPosition(accelX, accelY);
+		
+		return raceOver;
+    }
+    
+   
 	// print out the racetrack
-	public void printTrack(String[][] thisTrack) {
+	public void printTrack(String[][] thisTrack, int t, Car c, int accelerationX, int accelerationY) {
 		String thisLine = "";
+		
+		LOGGER.log(Level.INFO, "Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");	
+		LOGGER.log(Level.INFO, "Acceleration at time step t = " + t + " is (" + accelerationX + "," + accelerationY + ")");
 		
 		for (int i = 0; i < thisTrack.length; i++) {
 			thisLine = "";

@@ -17,7 +17,6 @@ public class TrackBuilder {
 	}
 	
 	// reads in the track from file
-	// TODO: flip track
 	public String[][] buildTrack() {
 		// read in data
 		String currentLine = null;
@@ -34,7 +33,7 @@ public class TrackBuilder {
 			currentLine = br.readLine();
 			rows = Integer.parseInt(currentLine.substring(0, currentLine.indexOf(',')));
 			cols = Integer.parseInt(currentLine.substring(currentLine.indexOf(',') + 1, currentLine.length()));
-		
+
 			// stores the racetrack as it is read in
 			racetrack = new String[rows][cols];
 		
