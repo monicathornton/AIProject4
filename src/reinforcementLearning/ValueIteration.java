@@ -82,6 +82,14 @@ public class ValueIteration extends Driver {
 
         printTrackConsole(track, t, trainCar, 0, 0);
 
+        //bug replication
+        trainCar.positionX = 9;
+        trainCar.positionY = 7;
+        trainCar.velocityX = 3;
+        trainCar.velocityY = -4;
+        trainCar.newPosition(1,1);
+        String a = track[trainCar.positionX][trainCar.positionY];
+
         train();
         super.get_logger().log(Level.INFO, "Done Training!");
 
