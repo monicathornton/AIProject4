@@ -1,2 +1,4 @@
 Running Q-learning on Simple-track with in situ restart on crash.
 
+BOOM! Crashed into a wall at (2, 0). Crash # 1
+After crash restart at (0, 0)
