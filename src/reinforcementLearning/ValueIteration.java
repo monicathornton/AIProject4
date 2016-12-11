@@ -65,6 +65,11 @@ public class ValueIteration extends Driver {
     //TODO: clean this up when done testing
     public ValueIteration(String[][] trainTrack, String algoName, String trackName, String crashName, String crashChoice) throws IOException {
         this.trainTrack = trainTrack;
+
+        testTrack = new String[trainTrack.length][];
+        for(int i = 0; i < trainTrack.length; i++)
+            testTrack[i] = trainTrack[i].clone();
+
         this.testTrack = trainTrack.clone();
         this.algoName = algoName;
         this.trackName = trackName;
@@ -150,13 +155,20 @@ public class ValueIteration extends Driver {
     void test() {
 
         boolean finished = false;
-
+        int t = 0;
+        printTrackConsole(testTrack, t, trainCar, 0, 0);
+        //TODO: better starting
+        int[][] what = testCar.startLocs;
+        testCar.positionX = 1;
+        testCar.positionY = 3;
         while (!finished) {
-            String curState = String.format("%d%d%d%d", testCar.positionX, testCar.positionY, testCar.velocityX, testCar.velocityY);
+            String curState = String.format("%d%d%d%d", testCar.positionY, testCar.positionX, testCar.velocityX, testCar.velocityY);
             String action = policy.get(curState);
             int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
             int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
             finished = drive(testCar, xa, ya);
+            t++;
+            printTrackConsole(testTrack, t, trainCar, xa, ya);
         }
 
     }
@@ -176,7 +188,13 @@ public class ValueIteration extends Driver {
             // utility and possibility of staying in place
             double total = stayInPlace * states.get(curState);
 
-            double newStateUtility = trainMove(action);
+        double newStateUtility = 0.0;
+        try {
+             newStateUtility = trainMove(action);
+        }
+        catch (Exception e){
+            newStateUtility = trainMove(action);
+        }
 
             // utility and possibility of moving
             total += successfulMove * newStateUtility;
@@ -252,7 +270,7 @@ public class ValueIteration extends Driver {
         for (int row = 0; row < trainTrack.length; row++) {
             for (int col = 0; col < trainTrack[0].length; col++) {
                 // for each possible combination of velocities in x and y direction
-                String key = String.format("%d%d%d%d", row, col, 0, 0);
+                String key = String.format("%d%d%d%d", col, row, 0, 0);
 
                 if (trainTrack[row][col].equals("#")) {  //You're only ever going to be at zero when against (actually in) a wall
                     states.put(key, -10.0);
@@ -261,7 +279,7 @@ public class ValueIteration extends Driver {
                     for (int xv = 0; xv < velocityPossibilities.length - 1; xv++) {
                         for (int yv = 0; yv < velocityPossibilities.length - 1; yv++) {
 
-                            key = String.format("%d%d%d%d", row, col, velocityPossibilities[xv], velocityPossibilities[yv]);
+                            key = String.format("%d%d%d%d", col, row, velocityPossibilities[xv], velocityPossibilities[yv]);
 
                             if (trainTrack[row][col].equals("F")) {
                                 states.put(key, +10.0);
