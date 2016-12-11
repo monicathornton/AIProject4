@@ -47,7 +47,7 @@ public class ValueIteration extends Driver {
     private final double stayInPlace = .2;
     private final double gamma = .3; //prefer short term rewards
     private final double error = .1;
-    private HashMap policy = new HashMap<String, Double>(); //state -> action
+    private HashMap<String, String> policy = new HashMap(); //state -> action
 
 
     private double normalCellRewoard = -0.4;
@@ -89,10 +89,11 @@ public class ValueIteration extends Driver {
 //        String a = trainTrack[trainCar.positionX][trainCar.positionY];
 
         train();
-
+        super.get_logger().log(Level.INFO, "Done Training!");
         testCar = new Car(testTrack, crashChoice);
         test();
-        super.get_logger().log(Level.INFO, "Done Training!");
+        super.get_logger().log(Level.INFO, "Done Testing!");
+
 
     }
 
@@ -152,7 +153,10 @@ public class ValueIteration extends Driver {
 
         while (!finished) {
             String curState = String.format("%d%d%d%d", testCar.positionX, testCar.positionY, testCar.velocityX, testCar.velocityY);
-            finished = true;
+            String action = policy.get(curState);
+            int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
+            int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
+            finished = drive(testCar, xa, ya);
         }
 
     }
@@ -169,7 +173,6 @@ public class ValueIteration extends Driver {
        returns P(s'|s, a)*U(s')
     */
     private double calcTransition(String curState, String action) {
-        try {
             // utility and possibility of staying in place
             double total = stayInPlace * states.get(curState);
 
@@ -179,33 +182,34 @@ public class ValueIteration extends Driver {
             total += successfulMove * newStateUtility;
             return total;
 
-        } catch (Exception e) {
-            System.out.println("hi");
-            return 0.0;
-        }
-
     }
 
     private Double trainMove(String action) {
-        int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
-        int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
+        try {
+            int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
+            int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
 
-        String newState;
+            String newState;
 
-        if (trainTrack[trainCar.positionX][trainCar.positionY].equals("#") || trainTrack[trainCar.positionX][trainCar.positionY].equals("X") && xa == 0 || ya == 0) {
-            return -100.0; //We should not remain in place when in a wall!!!
-        } else {
-            this.trainCar.newPosition(xa, ya);
+            if (trainTrack[trainCar.positionX][trainCar.positionY].equals("#") || trainTrack[trainCar.positionX][trainCar.positionY].equals("X") && xa == 0 || ya == 0) {
+                return -100.0; //We should not remain in place when in a wall!!!
+            } else {
+                this.trainCar.newPosition(xa, ya);
+            }
+
+
+            if (trainTrack[trainCar.positionX][trainCar.positionY].equals("#") || trainTrack[trainCar.positionX][trainCar.positionY].equals("X")) {
+                newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, 0, 0);
+            } else {
+
+                newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, trainCar.velocityX, trainCar.velocityY);
+            }
+            return states.get(newState);
         }
-
-
-        if (trainTrack[trainCar.positionX][trainCar.positionY].equals("#") || trainTrack[trainCar.positionX][trainCar.positionY].equals("X")) {
-            newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, 0, 0);
-        } else {
-
-            newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, trainCar.velocityX, trainCar.velocityY);
+        catch (Exception e){
+            System.out.println("Train Move");
+            return 0.0;
         }
-        return states.get(newState);
     }
 
 
@@ -277,19 +281,14 @@ public class ValueIteration extends Driver {
         String bestAction = "00";
         //for every state
         for (String state : states.keySet()) {
-
             setTrainState(state);
-
             //   for every action
             for (String action : actions) {
-
                 double U = trainMove(action);
-
-                if (U > maxUtility) {                     //           if U > maxU then action = bestAction
-
+                //  if U > maxU then action = bestAction
+                if (U > maxUtility) {
                     maxUtility = U;
                     bestAction = action;
-
                 }
             }
         policy.put(state, bestAction);
