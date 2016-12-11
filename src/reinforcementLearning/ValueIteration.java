@@ -32,6 +32,7 @@ local:
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.Arrays;
 
 public class ValueIteration extends Driver {
     // holds the racetrack and variables selected by the user
@@ -67,10 +68,9 @@ public class ValueIteration extends Driver {
         this.trainTrack = trainTrack;
 
         testTrack = new String[trainTrack.length][];
-        for(int i = 0; i < trainTrack.length; i++)
-            testTrack[i] = trainTrack[i].clone();
 
-        this.testTrack = trainTrack.clone();
+
+        this.testTrack = copyOf(trainTrack);
         this.algoName = algoName;
         this.trackName = trackName;
         this.crashName = crashName;
@@ -86,22 +86,31 @@ public class ValueIteration extends Driver {
         printTrackConsole(trainTrack, t, trainCar, 0, 0);
 
         //bug replication
-//        trainCar.positionX = 9;
-//        trainCar.positionY = 7;
-//        trainCar.velocityX = 3;
-//        trainCar.velocityY = -4;
-//        trainCar.newPosition(1,1);
-//        String a = trainTrack[trainCar.positionX][trainCar.positionY];
+        trainCar.positionX = 9;
+        trainCar.positionY = 7;
+        trainCar.velocityX = 3;
+        trainCar.velocityY = -4;
+        trainCar.newPosition(1,1);
+        String a = trainTrack[trainCar.positionX][trainCar.positionY];
 
-        train();
-        super.get_logger().log(Level.INFO, "Done Training!");
-        testCar = new Car(testTrack, crashChoice);
-        test();
-        super.get_logger().log(Level.INFO, "Done Testing!");
+//        train();
+//        super.get_logger().log(Level.INFO, "Done Training!");
+//        testCar = new Car(testTrack, crashChoice);
+//        test();
+//        super.get_logger().log(Level.INFO, "Done Testing!");
 
 
     }
 
+    public String[][] copyOf(String[][] input) {
+        if (input == null)
+            return null;
+        String[][] result = new String[input.length][];
+        for (int r = 0; r < input.length; r++) {
+            result[r] = input[r].clone();
+        }
+        return result;
+    }
 
     void train() {
         createStates();
@@ -157,10 +166,7 @@ public class ValueIteration extends Driver {
         boolean finished = false;
         int t = 0;
         printTrackConsole(testTrack, t, trainCar, 0, 0);
-        //TODO: better starting
-        int[][] what = testCar.startLocs;
-        testCar.positionX = 1;
-        testCar.positionY = 3;
+        testCar.putCarAtStart();
         while (!finished) {
             String curState = String.format("%d%d%d%d", testCar.positionY, testCar.positionX, testCar.velocityX, testCar.velocityY);
             String action = policy.get(curState);
