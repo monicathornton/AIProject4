@@ -89,8 +89,15 @@ public class ValueIteration extends Driver {
         this.trainCar.velocityX = 2;
         this.trainCar.velocityY = 1;
         this.trainCar.newPosition(1,1);
-        String a = track[trainCar.positionX][trainCar.positionY];
+        String a = track[trainCar.positionY][trainCar.positionX];
+        System.out.println(trainCar.getPositionX());
+        System.out.println(trainCar.getPositionY());        
+        System.out.println(a);      
 
+        
+        
+        
+        
 //        train();
 
     }

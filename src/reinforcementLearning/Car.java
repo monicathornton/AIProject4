@@ -107,6 +107,7 @@ public class Car {
 			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
 			if (!crossedFinish) {
+				System.out.println("not crossed Finish");
 				// places an X on the track to show where the car has crashed on its run
 				track[yCrash][xCrash] = "X";
 				
@@ -155,6 +156,8 @@ public class Car {
 			    	// check if this x and y location corresponds to a wall
 				    if (finishLocs[i][0] == x && finishLocs[i][1] == y) {
 						track[y][x] = "C";
+						positionX = x;
+						positionY = y;
 				    	crossedFinish = true;
 						}	    		
 			    	} // end for
@@ -331,6 +334,7 @@ public class Car {
 		
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
+		
 		// updates the x and y position
 		positionX = newX;
 		positionY = newY;
