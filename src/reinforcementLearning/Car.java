@@ -113,7 +113,7 @@ public class Car {
 			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
 			if (!crossedFinish) {
-				System.out.println("not crossed Finish");
+				System.out.println("not crossed Finish")
 				// places an X on the track to show where the car has crashed on its run
 				track[yCrash][xCrash] = "X";
 				
