@@ -74,6 +74,7 @@ public class ValueIteration extends Driver {
         this.crashChoice = crashChoice;
 
         this.trainCar = new Car(track, crashChoice);
+        this.trainCar.setTraining();
         printTrackInfo(algoName, trackName, crashName);
 
         int t = 0;
