@@ -126,6 +126,16 @@ public class Car {
 		// returns true if car has crossed the finish line, false otherwise
 		return crossedFinish;
 	}
+
+	// Gets the x component of velocity
+	public int getVelocityX() {
+		return velocityX;
+	}
+	
+	// Gets the y component of velocity
+	public int getVelocityY() {
+		return velocityY;
+	}	
 	
 	// updates the x component of velocity according to the project specifications, adds 
 	// acceleration to velocity before the position is updated
@@ -307,8 +317,8 @@ public class Car {
 		int randomNum = rand.nextInt(startLocs.length);			
 		
 		// gets a random starting location from the list of available starting locations
-		startLocY = startLocs[randomNum][0];
-		startLocX = startLocs[randomNum][1];
+		startLocY = startLocs[randomNum][1];
+		startLocX = startLocs[randomNum][0];
 		
 		// puts the car on the track
 		track[startLocY][startLocX] = "C";

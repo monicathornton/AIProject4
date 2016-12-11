@@ -39,6 +39,9 @@ public class ValueIteration extends Driver {
 
 		//c.putCarAtStart();
 		
+		
+		
+		
 		//c.positionX = c.getCarLocation(track)[0];
 		//c.positionY = c.getCarLocation(track)[1];
 		c.positionX = 32;

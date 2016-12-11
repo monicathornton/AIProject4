@@ -75,8 +75,9 @@ public abstract class Driver {
 	public void printTrack(String[][] thisTrack, int t, Car c, int accelerationX, int accelerationY) {
 		String thisLine = "";
 		
-		LOGGER.log(Level.INFO, "Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");	
-		LOGGER.log(Level.INFO, "Acceleration at time step t = " + t + " is (" + accelerationX + "," + accelerationY + ")");
+		LOGGER.log(Level.INFO, "At time t = " + t + ":");
+		LOGGER.log(Level.INFO, "  Velocity = (" + c.getVelocityX() + "," + c.getVelocityY() + ")");	
+		LOGGER.log(Level.INFO, "  Acceleration = (" + accelerationX + "," + accelerationY + ")");
 		
 		for (int i = 0; i < thisTrack.length; i++) {
 			thisLine = "";
