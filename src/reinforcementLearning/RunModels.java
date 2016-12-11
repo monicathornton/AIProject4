@@ -24,23 +24,23 @@ public class RunModels {
 		String trackFilePath = "";
 
 		// gives the user algorithm choices, forces them to choose from the list
-//		while (!algoChoice.equalsIgnoreCase("v") && !algoChoice.equalsIgnoreCase("q")) {
+		while (!algoChoice.equalsIgnoreCase("v") && !algoChoice.equalsIgnoreCase("q")) {
 //
-//			System.out.println("***Please pick from one of the following algorithms***");
-//			System.out.println("To race a car using Value Iteration, please type 'v'");
-//			System.out.println("To race a car using Q-learning, please type 'q'");
-//
-//			// holds the user's choice of algorithm
-//			algoChoice = in.nextLine().toLowerCase();
-//
-//			if (!algoChoice.equalsIgnoreCase("v") && !algoChoice.equalsIgnoreCase("q")) {
-//				System.out.println(algoChoice + " is an invalid choice for algorithm, please choose again.");
-//				System.out.println();
-//			} else {
-//				System.out.println();
-//			}
-//		} // end while: user has picked a valid algo choice
-		algoChoice = "v";
+			System.out.println("***Please pick from one of the following algorithms***");
+			System.out.println("To race a car using Value Iteration, please type 'v'");
+			System.out.println("To race a car using Q-learning, please type 'q'");
+
+			// holds the user's choice of algorithm
+			algoChoice = in.nextLine().toLowerCase();
+
+			if (!algoChoice.equalsIgnoreCase("v") && !algoChoice.equalsIgnoreCase("q")) {
+				System.out.println(algoChoice + " is an invalid choice for algorithm, please choose again.");
+				System.out.println();
+			} else {
+				System.out.println();
+			}
+		} // end while: user has picked a valid algo choice
+		//algoChoice = "v";
 
 //		// gives the user a series of track choices, forces them to choose from the list
 //		while (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {

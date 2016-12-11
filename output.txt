@@ -1,0 +1,7 @@
+Running Q-learning on Training-track with in situ restart on crash.
+
+Car on start line at (2, 6)
+Car on start line at (4, 6)
+Car on start line at (6, 6)
+Car on start line at (3, 6)
+Car on start line at (5, 6)
