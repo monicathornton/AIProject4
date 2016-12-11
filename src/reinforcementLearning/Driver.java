@@ -76,6 +76,7 @@ public abstract class Driver {
 		String thisLine = "";
 		
 		LOGGER.log(Level.INFO, "At time t = " + t + ":");
+		LOGGER.log(Level.INFO, "  Position = (" + c.getPositionX() + "," + c.getPositionY() + ")");
 		LOGGER.log(Level.INFO, "  Velocity = (" + c.getVelocityX() + "," + c.getVelocityY() + ")");	
 		LOGGER.log(Level.INFO, "  Acceleration = (" + accelerationX + "," + accelerationY + ")");
 		
