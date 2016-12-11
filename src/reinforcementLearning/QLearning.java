@@ -19,7 +19,9 @@ public class QLearning extends Driver {
 	private String trackName;
 	private String crashName;
 	private Car car;
-	public int maxIter;
+	private int maxIter;
+	private double alpha; //learning rate
+	private double gamma; //discount factor
 
 	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;//HashMap<Position, HashMap<Velocity, HashMap<Action, Reward>>>
 	
@@ -45,10 +47,24 @@ public class QLearning extends Driver {
 		//super.get_logger().log(Level.INFO, rewards.toString());
 		for(int i = 0; i < maxIter; i++){
 			//select position
+			Pair position = new Pair(1,2);//TODO select a real position!
 			//select Velocity
 			int velocityx = (int)Math.floor(Math.random()*11)-5;
 			int velocityy = (int)Math.floor(Math.random()*11)-5;
-			System.out.println(velocityx + " " + velocityy);
+			Pair velocity = new Pair(velocityx, velocityy);
+			for(int m = -1; m <= 1; m++){//for each action
+				for(int n = -1; n <= 1; n++){
+					Pair act = new Pair(m,n);
+					//calculate next position and velocity //TODO next pos and velocity
+					//find max reward of actions
+					double maxreward = 0;//TODO actually find max reward
+					double q = rewards.get(position).get(velocity).get(act);
+					double reward = 0;//TODO figure out reward
+					double newq = q + (alpha*(reward + (gamma*maxreward) - q));
+					rewards.get(position).get(velocity).put(act, newq);
+				}
+			}
+			//drive car through track recording crashes and moves
 		}
 		
 	}
