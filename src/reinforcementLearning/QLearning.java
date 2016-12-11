@@ -156,11 +156,11 @@ public class QLearning extends Driver {
 	void initialize(){
 		//get open positions
 		int[][] locs = car.openLocs;
+				
 		//for each open position:
 		for(int i = 0; i < locs.length; i++){
-			for(int j = 0; j < locs[i].length; j++){
 				//create a HashMap
-				Pair pos = new Pair(i,j);
+				Pair pos = new Pair(locs[i][0],locs[i][1]);
 				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
 				//for each possible velocity
 				for(int k = -5; k <= 5; k++){
@@ -180,15 +180,14 @@ public class QLearning extends Driver {
 					}
 				}
 				rewards.put(pos, intermediate);
-			}
 			
 		}
+		
 		int[][] flocs = car.finishLocs;
 		//for each open position:
 		for(int i = 0; i < flocs.length; i++){
-			for(int j = 0; j < flocs[i].length; j++){
 				//create a HashMap
-				Pair pos = new Pair(i,j);
+				Pair pos = new Pair(flocs[i][0],flocs[i][1]);
 				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
 				//for each possible velocity
 				for(int k = -5; k <= 5; k++){
@@ -208,14 +207,13 @@ public class QLearning extends Driver {
 					}
 				}
 				rewards.put(pos, intermediate);
-			}
 		}
+		
 		int[][] slocs = car.startLocs;
 		//for each open position:
 		for(int i = 0; i < slocs.length; i++){
-			for(int j = 0; j < slocs[i].length; j++){
 				//create a HashMap
-				Pair pos = new Pair(i,j);
+				Pair pos = new Pair(slocs[i][0],slocs[i][1]);
 				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
 				//for each possible velocity
 				for(int k = -5; k <= 5; k++){
@@ -235,7 +233,6 @@ public class QLearning extends Driver {
 					}
 				}
 				rewards.put(pos, intermediate);
-			}
 		}
 		
 	}
