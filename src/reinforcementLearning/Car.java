@@ -26,8 +26,8 @@ public class Car {
 	public int positionY;
 	
 	// x and y components of velocity at time t
-	public int velocityX = 0;
-	public int velocityY = 0;
+	public int velocityX;
+	public int velocityY;
 
 	// holds the location where the car started
 	public int startLocX;
@@ -48,6 +48,9 @@ public class Car {
 		this.track = track;
 		this.crashChoice = crashChoice;
 		
+		velocityX = 0;
+		velocityY = 0;
+		
 		// gets the open, start, finish and wall locations
 		openLocs = getOpenLocs();
 		startLocs = getStartLocs();
@@ -66,7 +69,7 @@ public class Car {
 		// check to see if the location of the car was on one of the open spaces
 		for (int i = 0; i < openLocs.length; i++) {			
 		
-			if (openLocs[i][0] == oldY && openLocs[i][1] == oldX) {				
+			if (openLocs[i][0] == oldX && openLocs[i][1] == oldY) {				
 				// replace the space on the track with the appropriate symbol before replacing with new car loc 
 				track[oldY][oldX] = ".";
 			}
@@ -76,7 +79,7 @@ public class Car {
 		
 		// check to see if the location of the car was on one of the start spaces
 		for (int i = 0; i < startLocs.length; i++) {
-			if (startLocs[i][0] == oldY && startLocs[i][1] == oldX) {
+			if (startLocs[i][0] == oldX && startLocs[i][1] == oldY) {
 			// replace the space on the track with the appropriate symbol before replacing with new car loc 
 				track[oldY][oldX] = "S";
 			}
@@ -99,13 +102,21 @@ public class Car {
 			positionY = newY;
 			
 			// checks if the car has crossed the finish line
-			crossedFinish = endRace(positionX, positionY); 
+			crossedFinish = endRace(newX, newY, oldX, oldY); 
 		} else {
-			// places an X on the track to show where the car has crashed on its run
-			track[yCrash][xCrash] = "X";
+
+			// checks if car has crossed finish line before crash
+			// bc a crash after the finish line does not end the race
+			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
-			// calls the crash handler, which deals with the specifics of the car crash 
-			crashHandler(crashChoice, oldX, oldY, newX, newY);		
+			if (!crossedFinish) {
+				// places an X on the track to show where the car has crashed on its run
+				track[yCrash][xCrash] = "X";
+				
+				// calls the crash handler, which deals with the specifics of the car crash 
+				crashHandler(crashChoice, oldX, oldY, newX, newY);					
+			} 
+			
 		}
 		
 		// returns true if race is over, false otherwise
@@ -113,21 +124,81 @@ public class Car {
 	
 	}	
 
+	// TODO: fix finish line loc
 	// Checks if the car has crossed the finish line
-	public boolean endRace(int positionX, int positionY) {
+	public boolean endRace(int newX, int newY, int oldX, int oldY) {
 		boolean crossedFinish = false;
 		
-		// checks if the current location is in the array of finish line locations
-		for (int i = 0; i < finishLocs.length; i++) {
-			if (finishLocs[i][0] == positionY && finishLocs[i][1] == positionX) {
-				// are on the finish line
-				crossedFinish = true;
+		// difference between new and old x and y locations
+		int dX = Math.abs(oldX - newX);
+		int dY = Math.abs(oldY - newY);
+				
+		// starting positions for x and y
+		int x = oldX;
+		int y = oldY;
+				
+		// iterator for keeping track of number of times to loop
+		int n = 1 + dX + dY;
+				
+		// determines the sign (and hence direction) to move between locations
+		int xInc = (newX > oldX) ? 1: -1;
+		int yInc = (newY > oldY) ? 1: -1;
+				
+		int error = dX - dY;
+				
+		// each square is size one, so endpoints are offset by 0.5
+		dX *= 2;
+		dY *= 2;
+				
+		// for the entire length of the line
+		for (; n > 0; --n)
+		    {
+				// checks to see if the car crosses a finish line
+			    for (int i = 0; i < finishLocs.length; i++) {
+			    	// check if this x and y location corresponds to a wall
+				    if (finishLocs[i][0] == x && finishLocs[i][1] == y) {
+						track[y][x] = "C";
+				    	crossedFinish = true;
+						}	    		
+			    	} // end for
+
+			        if (error > 0)
+			        {
+			            x += xInc;
+			            error -= dY;
+			        }
+			        else
+			        {
+			            y += yInc;
+			            error += dX;
+			        }
+			    }
+			    
+				// car has not collided with a wall
+				return crossedFinish;
 			}
-		}
-		
-		// returns true if car has crossed the finish line, false otherwise
-		return crossedFinish;
+
+	// Gets the x component of velocity
+	public int getVelocityX() {
+		return velocityX;
 	}
+	
+	// Gets the y component of velocity
+	public int getVelocityY() {
+		return velocityY;
+	}	
+
+	
+	// Gets the x position
+	public int getPositionX() {
+		return positionX;
+	}
+	
+	// Gets the y position
+	public int getPositionY() {
+		return positionY;
+	}	
+	
 	
 	// updates the x component of velocity according to the project specifications, adds 
 	// acceleration to velocity before the position is updated
@@ -135,8 +206,11 @@ public class Car {
 	public int updateVelocityX(int accelX) {
 		// only accelerate or decelerate if velocity is in range -5 to 5 (inclusive), 
 		// otherwise velocity is unchanged
-		if (velocityX <= 5 || velocityX >= -5) {
-			velocityX = velocityX + accelX;
+		
+		if (velocityX + accelX <= 5) {
+			if (velocityX + accelX >= -5) {
+				velocityX = velocityX + accelX;	
+			} 
 		} 
 		
 		return velocityX;
@@ -146,8 +220,10 @@ public class Car {
 	// acceleration to velocity before the position is updated
 	// valid velocity values are between -5 and 5
 	public int updateVelocityY(int accelY) {
-		if (velocityY <= 5 || velocityY >= -5) {
-			velocityY = velocityY + accelY;
+		if (velocityY + accelY <= 5) {
+			if (velocityY + accelY >= -5) {
+				velocityY = velocityY + accelY;
+			}
 		}
 			
 		return velocityY;
@@ -254,9 +330,7 @@ public class Car {
 		} // end if
 		
 		// makes sure the newX and/or Y values are valid choices
-		if (newX < track.length && newX >= 0 && newY < track.length && newY >= 0) {
-			track[newY][newX] = "C";		
-		} 
+		track[newY][newX] = "C";		
 		
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
@@ -309,8 +383,11 @@ public class Car {
 		int randomNum = rand.nextInt(startLocs.length);			
 		
 		// gets a random starting location from the list of available starting locations
-		startLocY = startLocs[randomNum][0];
-		startLocX = startLocs[randomNum][1];
+		startLocY = startLocs[randomNum][1];
+		startLocX = startLocs[randomNum][0];
+		
+		positionY = startLocY;
+		positionX = startLocX;
 		
 		// puts the car on the track
 		track[startLocY][startLocX] = "C";
@@ -432,8 +509,8 @@ public class Car {
 		for (int i = 0; i < track.length; i++) {
 			for (int j = 0; j < track[i].length; j++) {
 				if(track[i][j].equalsIgnoreCase(thisChar)) {
-					localArray[laIndex][0] = i;
-					localArray[laIndex][1] = j;
+					localArray[laIndex][0] = j;
+					localArray[laIndex][1] = i;
 					laIndex++;
 				}
 			} 
@@ -456,6 +533,7 @@ public class Car {
 	 */
 	
 	public boolean collisionDetection(int newX, int newY, int oldX, int oldY) {
+		
 		// difference between new and old x and y locations
 		int dX = Math.abs(oldX - newX);
 		int dY = Math.abs(oldY - newY);
@@ -483,7 +561,7 @@ public class Car {
 	    	// checks to see if the car collides with a wall
 	    	for (int i = 0; i < wallLocs.length; i++) {
 		    	// check if this x and y location corresponds to a wall
-		    	if (wallLocs[i][0] == y && wallLocs[i][1] == x) {
+		    	if (wallLocs[i][0] == x && wallLocs[i][1] == y) {
 		    		xCrash = x;
 		    		yCrash = y;
 		    		return true;
