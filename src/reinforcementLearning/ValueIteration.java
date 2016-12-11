@@ -324,12 +324,6 @@ public class ValueIteration extends Driver {
             policy.put(state, bestAction);
         }
     }
-<<<<<<< HEAD
-    
-    }
-=======
-
 
 }
->>>>>>> fd7f0a64afbb4e6efa3437d7081fc4551d277908
 
