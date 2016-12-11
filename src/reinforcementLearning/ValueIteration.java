@@ -49,8 +49,8 @@ public class ValueIteration extends Driver {
     private HashMap<String, Double> states = new HashMap<>(); //cell xy then velocity xy -> utility
     private final double successfulMove = .8;
     private final double stayInPlace = .2;
-    private final double gamma = .5;
-    private final double error = .2;
+    private final double gamma = .3; //prefer short term rewards
+    private final double error = .1;
     private HashMap policy = new HashMap<String, Double>(); //state -> action
 
 
@@ -84,14 +84,15 @@ public class ValueIteration extends Driver {
 
         //bug replication?
 
-        this.trainCar.positionX = 2;
-        this.trainCar.positionY = 1;
-        this.trainCar.velocityX = 2;
-        this.trainCar.velocityY = 1;
-        this.trainCar.newPosition(1,1);
-        String a = track[trainCar.positionX][trainCar.positionY];
+//        this.trainCar.positionX = 2;
+//        this.trainCar.positionY = 1;
+//        this.trainCar.velocityX = 2;
+//        this.trainCar.velocityY = 1;
+//        this.trainCar.newPosition(1,1);
+//        String a = track[trainCar.positionX][trainCar.positionY];
 
-//        train();
+        train();
+        super.get_logger().log(Level.INFO, "Done Training!");
 
     }
 
@@ -103,10 +104,13 @@ public class ValueIteration extends Driver {
 
         String statePrime;
         double U = 0.0;
-        double UPrime;
+        double UPrime = 0.0;
+        int actX = 0;
+        int actY = 0;
 
         while (delta < threshold) {
             //calculate utility for each state
+            U = UPrime;
             for (String state : states.keySet()) {
 
                 // get action that returns best utility
@@ -115,10 +119,12 @@ public class ValueIteration extends Driver {
                     double temp = calcTransition(state, action);
                     if (maxAction < temp) {
                         maxAction = temp;
+                        actX = Integer.valueOf(Character.getNumericValue(state.charAt(0)));
+                        actY = Integer.valueOf(Character.getNumericValue(state.charAt(1)));
                     }
                 }
 
-                UPrime = getReward() + gamma * maxAction;
+                UPrime = getReward(actX, actY) + gamma * maxAction;
 
                 states.put(state, UPrime);
 
@@ -126,6 +132,10 @@ public class ValueIteration extends Driver {
                 // update delta
                 if (Math.abs(UPrime - U) > delta) {
                     delta = Math.abs(UPrime - U);
+                }
+
+                if (delta < threshold) {
+                    break;
                 }
 
             }
@@ -137,8 +147,8 @@ public class ValueIteration extends Driver {
 
     }
 
-    private double getReward() {
-        if (track[trainCar.positionX][trainCar.positionY].equals("F")) {
+    private double getReward(int x, int y) {
+        if (track[x][y].equals("F")) {
             return 0.0;
         } else {
             return -1.0;
@@ -177,21 +187,19 @@ public class ValueIteration extends Driver {
             int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
             int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
 
-            if (track[trainCar.positionX][trainCar.positionY].equals("#") || track[trainCar.positionX][trainCar.positionY].equals("X") && xa == 0 || ya ==0) {
+            if (track[trainCar.positionX][trainCar.positionY].equals("#") || track[trainCar.positionX][trainCar.positionY].equals("X") && xa == 0 || ya == 0) {
                 return -100.0; //We should not remain in place when in a wall!!!
-            }
-            else{
+            } else {
                 this.trainCar.newPosition(xa, ya);
             }
 
             String newState;
 
-            if (track[trainCar.positionX][trainCar.positionY].equals("#") || track[trainCar.positionX][trainCar.positionY].equals("X")){
+            if (track[trainCar.positionX][trainCar.positionY].equals("#") || track[trainCar.positionX][trainCar.positionY].equals("X")) {
                 newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, 0, 0);
-            }
-            else {
+            } else {
 
-                 newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, trainCar.velocityX, trainCar.velocityY);
+                newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, trainCar.velocityX, trainCar.velocityY);
             }
 
             total *= successfulMove * states.get(newState);
