@@ -100,12 +100,12 @@ public class Car {
 			positionY = newY;
 			
 			// checks if the car has crossed the finish line
-			crossedFinish = endRace(positionX, positionY); 
+			crossedFinish = endRace(newX, newY, oldX, oldY); 
 		} else {
 
 			// checks if car has crossed finish line before crash
 			// bc a crash after the finish line does not end the race
-			crossedFinish = endRace(positionX, positionY); 
+			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
 			if (!crossedFinish) {
 				// places an X on the track to show where the car has crashed on its run
@@ -124,20 +124,57 @@ public class Car {
 
 	// TODO: fix finish line loc
 	// Checks if the car has crossed the finish line
-	public boolean endRace(int positionX, int positionY) {
+	public boolean endRace(int newX, int newY, int oldX, int oldY) {
 		boolean crossedFinish = false;
 		
-		// checks if the current location is in the array of finish line locations
-		for (int i = 0; i < finishLocs.length; i++) {
-			if (finishLocs[i][0] == positionX && finishLocs[i][1] == positionY) {
-				// are on the finish line
-				crossedFinish = true;
+		// difference between new and old x and y locations
+		int dX = Math.abs(oldX - newX);
+		int dY = Math.abs(oldY - newY);
+				
+		// starting positions for x and y
+		int x = oldX;
+		int y = oldY;
+				
+		// iterator for keeping track of number of times to loop
+		int n = 1 + dX + dY;
+				
+		// determines the sign (and hence direction) to move between locations
+		int xInc = (newX > oldX) ? 1: -1;
+		int yInc = (newY > oldY) ? 1: -1;
+				
+		int error = dX - dY;
+				
+		// each square is size one, so endpoints are offset by 0.5
+		dX *= 2;
+		dY *= 2;
+				
+		// for the entire length of the line
+		for (; n > 0; --n)
+		    {
+				// checks to see if the car crosses a finish line
+			    for (int i = 0; i < finishLocs.length; i++) {
+			    	// check if this x and y location corresponds to a wall
+				    if (finishLocs[i][0] == x && finishLocs[i][1] == y) {
+						track[y][x] = "C";
+				    	crossedFinish = true;
+						}	    		
+			    	} // end for
+
+			        if (error > 0)
+			        {
+			            x += xInc;
+			            error -= dY;
+			        }
+			        else
+			        {
+			            y += yInc;
+			            error += dX;
+			        }
+			    }
+			    
+				// car has not collided with a wall
+				return crossedFinish;
 			}
-		}
-		
-		// returns true if car has crossed the finish line, false otherwise
-		return crossedFinish;
-	}
 
 	// Gets the x component of velocity
 	public int getVelocityX() {
@@ -494,7 +531,6 @@ public class Car {
 	 */
 	
 	public boolean collisionDetection(int newX, int newY, int oldX, int oldY) {
-		
 		
 		// difference between new and old x and y locations
 		int dX = Math.abs(oldX - newX);
