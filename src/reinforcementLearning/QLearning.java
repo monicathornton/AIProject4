@@ -1,5 +1,6 @@
 package reinforcementLearning;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 /*
  * Q learning algorithm:
@@ -16,6 +17,8 @@ public class QLearning extends Driver {
 	private String algoName;
 	private String trackName;
 	private String crashName;
+
+	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;//HashMap<Position, HashMap<Velocity, HashMap<Action, Reward>>>
 	
 	public QLearning(String[][] track, String algoName, String trackName, String crashName) {
 		this.track = track;
@@ -35,6 +38,16 @@ public class QLearning extends Driver {
 		// TODO Auto-generated method stub
 	}
 	
+	void initialize(){
+		//get open positions
+		//for each open position:
+			//create a HashMap
+			//for each possible velocity
+				//create a HashMap
+				//for each possible action
+					//create a HashMap with each value equal to -1
+		
+	}
 	
 	
 	// info for printing out for samples run
