@@ -151,87 +151,94 @@ public class QLearning extends Driver {
 	void initialize() {
 		// get open positions
 		int[][] locs = car.openLocs;
-		// for each open position:
-		for (int i = 0; i < locs.length; i++) {
-
-			// create a HashMap
-			Pair pos = new Pair(locs[i][0], locs[i][1]);
-			HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
-			// for each possible velocity
-			for (int k = -5; k <= 5; k++) {
-				for (int l = -5; l <= 5; l++) {
-					// create a HashMap
-					Pair vel = new Pair(k, l);
-					HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
-					// for each possible action
-					for (int m = -1; m <= 1; m++) {
-						for (int n = -1; n <= 1; n++) {
-							Pair act = new Pair(m, n);
-							tertiary.put(act, -1.0);
-							// create a HashMap with each value equal to
-							// -1
+				
+		//for each open position:
+		for(int i = 0; i < locs.length; i++){
+				//create a HashMap
+				Pair pos = new Pair(locs[i][0],locs[i][1]);
+				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
+				//for each possible velocity
+				for(int k = -5; k <= 5; k++){
+					for(int l = -5; l <= 5; l++){
+						//create a HashMap
+						Pair vel = new Pair(k, l);
+						HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
+						//for each possible action
+						for(int m = -1; m <= 1; m++){
+							for(int n = -1; n <= 1; n++){
+								Pair act = new Pair(m,n);
+								tertiary.put(act, -1.0);
+								//create a HashMap with each value equal to -1
+							
 						}
 					}
 					intermediate.put(vel, tertiary);
 				}
+
 			}
 			rewards.put(pos, intermediate);
 
+
 		}
+		
 		int[][] flocs = car.finishLocs;
-		// for each open position:
-		for (int i = 0; i < flocs.length; i++) {
+		//for each open position:
+		for(int i = 0; i < flocs.length; i++){
+				//create a HashMap
+				Pair pos = new Pair(flocs[i][0],flocs[i][1]);
+				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
+				//for each possible velocity
+				for(int k = -5; k <= 5; k++){
+					for(int l = -5; l <= 5; l++){
+						//create a HashMap
+						Pair vel = new Pair(k, l);
+						HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
+						//for each possible action
+						for(int m = -1; m <= 1; m++){
+							for(int n = -1; n <= 1; n++){
+								Pair act = new Pair(m,n);
+								tertiary.put(act, 0.0);
+								//create a HashMap with each value equal to -1
+							}
 
-			// create a HashMap
-			Pair pos = new Pair(flocs[i][0], flocs[i][1]);
-			HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
-			// for each possible velocity
-			for (int k = -5; k <= 5; k++) {
-				for (int l = -5; l <= 5; l++) {
-					// create a HashMap
-					Pair vel = new Pair(k, l);
-					HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
-					// for each possible action
-					for (int m = -1; m <= 1; m++) {
-						for (int n = -1; n <= 1; n++) {
-							Pair act = new Pair(m, n);
-							tertiary.put(act, 0.0);
-							// create a HashMap with each value equal to
-							// -1
-						}
 					}
 					intermediate.put(vel, tertiary);
 				}
+
 			}
 			rewards.put(pos, intermediate);
+
 
 		}
+		
 		int[][] slocs = car.startLocs;
-		// for each open position:
-		for (int i = 0; i < slocs.length; i++) {
 
-			// create a HashMap
-			Pair pos = new Pair(slocs[i][0], slocs[i][1]);
-			HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
-			// for each possible velocity
-			for (int k = -5; k <= 5; k++) {
-				for (int l = -5; l <= 5; l++) {
-					// create a HashMap
-					Pair vel = new Pair(k, l);
-					HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
-					// for each possible action
-					for (int m = -1; m <= 1; m++) {
-						for (int n = -1; n <= 1; n++) {
-							Pair act = new Pair(m, n);
-							tertiary.put(act, -1.0);
-							// create a HashMap with each value equal to
-							// -1
-						}
+		//for each open position:
+		for(int i = 0; i < slocs.length; i++){
+				//create a HashMap
+				Pair pos = new Pair(slocs[i][0],slocs[i][1]);
+				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
+				//for each possible velocity
+				for(int k = -5; k <= 5; k++){
+					for(int l = -5; l <= 5; l++){
+						//create a HashMap
+						Pair vel = new Pair(k, l);
+						HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
+						//for each possible action
+						for(int m = -1; m <= 1; m++){
+							for(int n = -1; n <= 1; n++){
+								Pair act = new Pair(m,n);
+								tertiary.put(act, -1.0);
+								//create a HashMap with each value equal to -1
+							}
+
 					}
 					intermediate.put(vel, tertiary);
 				}
+
 			}
 			rewards.put(pos, intermediate);
+
 
 		}
 
