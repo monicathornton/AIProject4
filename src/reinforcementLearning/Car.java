@@ -122,6 +122,7 @@ public class Car {
 	
 	}	
 
+	// TODO: fix finish line loc
 	// Checks if the car has crossed the finish line
 	public boolean endRace(int positionX, int positionY) {
 		boolean crossedFinish = false;
@@ -290,9 +291,7 @@ public class Car {
 		} // end if
 		
 		// makes sure the newX and/or Y values are valid choices
-		if (newX < track.length && newX >= 0 && newY < track.length && newY >= 0) {
-			track[newY][newX] = "C";		
-		} 
+		track[newY][newX] = "C";		
 		
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
