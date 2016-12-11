@@ -48,16 +48,9 @@ public class ValueIteration extends Driver {
 		prevPosX = c.getPositionX();
 		prevPosY = c.getPositionY();
 		
-		// the below is all for testing, MT will remove after finished with car/driver
-		//int newX, int newY, int oldX, int oldY
-		
 		boolean raceOver = false;
 		
-		// TODO: start at beginning and loop this to see if we come up with any errors (try on every track, with random accel vals) 
-		int i = 0;
-		
-		//while (!raceOver) {
-		while(i < 100) {
+		while (!raceOver) {
 			i++;
 			t++;
 			Random rando = new Random();
@@ -65,8 +58,8 @@ public class ValueIteration extends Driver {
 	       	int randomNumX = rando.nextInt(accelVals.length);  
 	       	int randomNumY = rando.nextInt(accelVals.length); 
 	       	
-	       	accelerationX = randomNumX;
-	       	accelerationY = randomNumY;
+	       	accelerationX = accelVals[randomNumX];
+	       	accelerationY = accelVals[randomNumY];
 	       	
 			// after we make move, check if race is over (value of move car - or whatever we send from Driver will be true)
 			raceOver = drive(c, accelerationX, accelerationY);
@@ -74,67 +67,7 @@ public class ValueIteration extends Driver {
 			
 		}
 		
-		super.get_logger().log(Level.INFO, "Car has finished race at time " + t);
-		
-		//TODO race over
-		//raceOver = c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);	
-		
-			
-
-		
-		
-		
-		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY += 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY+= 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY += 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY += 1;
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionX += 2;	
-		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY -= 1;		
-//		
-//		c.moveCar(c.positionX, c.positionY, prevPosX, prevPosY);		
-//		printTrack(track, t, c);
-//		t++;
-//		prevPosX = c.positionX;
-//		prevPosY = c.positionY;
-//		c.positionY -= 1;	
-		
-		
+		super.get_logger().log(Level.INFO, "Car has finished race at time " + t);		
 	
 	}
 	
@@ -154,6 +87,7 @@ public class ValueIteration extends Driver {
 	public void printTrackInfo(String algoName, String trackName,
 			String crashName) {
 		super.get_logger().log(Level.INFO, "Running " + algoName + " on " + trackName + " with " + crashName);
+		super.get_logger().log(Level.INFO, "note: an 'X' indicates a place where the car has crashed into the wall");
 		super.get_logger().log(Level.INFO, "");		
 	}	
 		
