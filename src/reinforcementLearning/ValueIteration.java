@@ -39,8 +39,8 @@ public class ValueIteration extends Driver {
     private String[][] trainTrack;
     private String[][] testTrack;
     private String[][] cleanTrack;
-    
-    
+
+
     private String algoName;
     private String trackName;
     private String crashName;
@@ -75,7 +75,7 @@ public class ValueIteration extends Driver {
 
         this.testTrack = copyOf(trainTrack);
         this.cleanTrack = copyOf(trainTrack);
-        
+
         this.algoName = algoName;
         this.trackName = trackName;
         this.crashName = crashName;
@@ -96,9 +96,9 @@ public class ValueIteration extends Driver {
         trainCar.positionY = 7;
         trainCar.velocityX = 3;
         trainCar.velocityY = -4;
-        trainCar.newPosition(1,1);
+        trainCar.newPosition(1, 1);
         String a = trainTrack[trainCar.positionY][trainCar.positionX];
-        
+
 //        //bug replication
 //                     x, y, xv, yv
         setTrainState("8,19,-1,1");
@@ -109,7 +109,6 @@ public class ValueIteration extends Driver {
         testCar = new Car(testTrack, crashChoice);
         test();
         super.get_logger().log(Level.INFO, "Done Testing!");
-
 
 
     }
@@ -145,6 +144,7 @@ public class ValueIteration extends Driver {
                 setTrainState(state);
 
                 for (String action : actions) {
+                    trainTrack = copyOf(cleanTrack);
                     double temp = calcTransition(state, action);
                     if (maxAction < temp) {
                         maxAction = temp;
@@ -324,12 +324,5 @@ public class ValueIteration extends Driver {
             policy.put(state, bestAction);
         }
     }
-<<<<<<< HEAD
-    
-    }
-=======
-
-
 }
->>>>>>> fd7f0a64afbb4e6efa3437d7081fc4551d277908
 
