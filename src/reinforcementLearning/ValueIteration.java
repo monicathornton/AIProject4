@@ -81,16 +81,6 @@ public class ValueIteration extends Driver {
 
         printTrackConsole(track, t, trainCar, 0, 0);
 
-
-        //bug replication?
-
-//        this.trainCar.positionX = 2;
-//        this.trainCar.positionY = 1;
-//        this.trainCar.velocityX = 2;
-//        this.trainCar.velocityY = 1;
-//        this.trainCar.newPosition(1,1);
-//        String a = track[trainCar.positionX][trainCar.positionY];
-
         train();
         super.get_logger().log(Level.INFO, "Done Training!");
 
