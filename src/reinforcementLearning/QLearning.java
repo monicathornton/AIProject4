@@ -1,5 +1,6 @@
 package reinforcementLearning;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
 /*
@@ -17,6 +18,8 @@ public class QLearning extends Driver {
 	private String algoName;
 	private String trackName;
 	private String crashName;
+	private Car car;
+	public int maxIter;
 
 	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;//HashMap<Position, HashMap<Velocity, HashMap<Action, Reward>>>
 	
@@ -25,12 +28,28 @@ public class QLearning extends Driver {
 		this.algoName = algoName;
 		this.trackName = trackName;
 		this.crashName = crashName;
-		
+		try {
+			car = new Car(track, crashName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		maxIter = 20;
+		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>();
 		printTrackInfo(algoName, trackName, crashName);
+		train();
 	}
 	
 	void train() {
-		// TODO Auto-generated method stub
+		initialize();
+		//super.get_logger().log(Level.INFO, rewards.toString());
+		for(int i = 0; i < maxIter; i++){
+			//select position
+			//select Velocity
+			int velocityx = (int)Math.floor(Math.random()*11)-5;
+			int velocityy = (int)Math.floor(Math.random()*11)-5;
+			System.out.println(velocityx + " " + velocityy);
+		}
 		
 	}
 
@@ -40,12 +59,33 @@ public class QLearning extends Driver {
 	
 	void initialize(){
 		//get open positions
+		int[][] locs = car.openLocs;
 		//for each open position:
-			//create a HashMap
-			//for each possible velocity
+		for(int i = 0; i < locs.length; i++){
+			for(int j = 0; j < locs[i].length; j++){
 				//create a HashMap
-				//for each possible action
-					//create a HashMap with each value equal to -1
+				Pair pos = new Pair(i,j);
+				HashMap<Pair, HashMap<Pair, Double>> intermediate = new HashMap<Pair, HashMap<Pair, Double>>();
+				//for each possible velocity
+				for(int k = -5; k <= 5; k++){
+					for(int l = -5; l <= 5; l++){
+						//create a HashMap
+						Pair vel = new Pair(k, l);
+						HashMap<Pair, Double> tertiary = new HashMap<Pair, Double>();
+						//for each possible action
+						for(int m = -1; m <= 1; m++){
+							for(int n = -1; n <= 1; n++){
+								Pair act = new Pair(m,n);
+								tertiary.put(act, -1.0);
+								//create a HashMap with each value equal to -1
+							}
+						}
+						intermediate.put(vel, tertiary);
+					}
+				}
+				rewards.put(pos, intermediate);
+			}
+		}
 		
 	}
 	
