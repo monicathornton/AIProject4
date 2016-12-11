@@ -58,7 +58,8 @@ public class Car {
 	
 	// place car on track at specified location
 	// return true if finish line is crossed
-	public boolean moveCar(int newX, int newY, int oldX, int oldY) {
+	// training bool added for Value Iteration, default should be false
+	public boolean moveCar(int newX, int newY, int oldX, int oldY, boolean training) {
 		// car is currently at the position indicated by oldX, oldY
 		// update the track (at this point car can be on open track or start line)
 				
@@ -91,8 +92,9 @@ public class Car {
 		
 		// if the car has not crashed, update the map with the new position of the car
 		if (!carCrash) {
-			track[newY][newX] = "C";
-			
+			if (!training) {
+				track[newY][newX] = "C";
+			}
 			positionX = newX;
 			positionY = newY;
 			
@@ -166,7 +168,7 @@ public class Car {
 		positionX = positionX + updateVelocityX(accelX);		
 		
 		// moves the car
-		raceFinished = moveCar(positionX, positionY, oldX, oldY);
+		raceFinished = moveCar(positionX, positionY, oldX, oldY, true);
 		
 		return raceFinished;
 	}
