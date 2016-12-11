@@ -32,6 +32,7 @@ public class Car {
 	// holds the location where the car started
 	public int startLocX;
 	public int startLocY;
+	public boolean training;
 	
 	/*
 	 * The following store the locations of the open spots on the track, 
@@ -58,6 +59,9 @@ public class Car {
 		wallLocs = getWallLocs();
 	}
 
+	public  void setTraining(){
+		this.training = true;
+	}
 	
 	// place car on track at specified location
 	// return true if finish line is crossed
@@ -94,7 +98,9 @@ public class Car {
 		
 		// if the car has not crashed, update the map with the new position of the car
 		if (!carCrash) {
-			track[newY][newX] = "C";
+			if (!training) {
+				track[newY][newX] = "C";
+			}
 			positionX = newX;
 			positionY = newY;
 			
@@ -155,7 +161,9 @@ public class Car {
 			    for (int i = 0; i < finishLocs.length; i++) {
 			    	// check if this x and y location corresponds to a wall
 				    if (finishLocs[i][0] == x && finishLocs[i][1] == y) {
-						track[y][x] = "C";
+				    	if (!training) {
+							track[y][x] = "C";
+						}
 						positionX = x;
 						positionY = y;
 				    	crossedFinish = true;
@@ -330,8 +338,9 @@ public class Car {
 		} // end if
 		
 		// makes sure the newX and/or Y values are valid choices
-		track[newY][newX] = "C";		
-		
+		if (!training) {
+			track[newY][newX] = "C";
+		}
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
 		
@@ -348,7 +357,9 @@ public class Car {
 		
 		// put car back at original starting location
 		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
-		track[startLocY][startLocX] = "C";
+		if (!training) {
+			track[startLocY][startLocX] = "C";
+		}
 		
 		positionX = startLocX;
 		positionY = startLocY;
@@ -391,7 +402,9 @@ public class Car {
 		positionX = startLocX;
 		
 		// puts the car on the track
-		track[startLocY][startLocX] = "C";
+		if (!training) {
+			track[startLocY][startLocX] = "C";
+		}
 		carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
 		
 	}
