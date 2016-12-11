@@ -1,7 +1,16 @@
 package reinforcementLearning;
 
 import java.util.logging.Level;
-
+/*
+ * Q learning algorithm:
+ * 		Initialize all rewards to 1
+ * 		While number of iterations < max iterations
+ * 			Pick a state (x, y, xv, yv)
+ * 			for each acceleration (xa, ya)
+ * 				calculate maximum expected reward
+ * 				store reward for each action
+ * 			run car through and record moves and crashes
+ */
 public class QLearning extends Driver {
 	private String[][] track;
 	private String algoName;
