@@ -48,7 +48,6 @@ public abstract class Driver {
     abstract void test();
  
 	// TODO: only let car crash 100 times	
-	//TODO: change so car just has to cross finish line, not stop there
     // Given the acceleration value from the algorithm (Value Iteration or Q-learning), drive the racecar.
     // There is a non-deterministic element to acceleration, where there is a 20% chance that the acceleration
     // will fail and the velocity will remain unchanged
@@ -90,6 +89,24 @@ public abstract class Driver {
 		}
 		LOGGER.log(Level.INFO, "");
 	}
+
+    // print out the racetrack
+    public void printTrackConsole(String[][] thisTrack, int t, Car c, int accelerationX, int accelerationY) {
+        String thisLine = "";
+
+        System.out.println("Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");
+        System.out.println("Acceleration at time step t = " + t + " is (" + accelerationX + "," + accelerationY + ")");
+
+        for (int i = 0; i < thisTrack.length; i++) {
+            thisLine = "";
+
+            for (int j = 0; j < thisTrack[i].length; j++) {
+                thisLine += thisTrack[i][j];
+            }
+            System.out.println(thisLine);
+        }
+        System.out.println("");
+    }
    
 }
 

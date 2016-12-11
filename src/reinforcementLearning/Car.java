@@ -32,6 +32,7 @@ public class Car {
 	// holds the location where the car started
 	public int startLocX;
 	public int startLocY;
+	public boolean training;
 	
 	/*
 	 * The following store the locations of the open spots on the track, 
@@ -58,6 +59,9 @@ public class Car {
 		wallLocs = getWallLocs();
 	}
 
+	public  void setTraining(){
+		this.training = true;
+	}
 	
 	// place car on track at specified location
 	// return true if finish line is crossed
@@ -94,20 +98,22 @@ public class Car {
 		
 		// if the car has not crashed, update the map with the new position of the car
 		if (!carCrash) {
-			track[newY][newX] = "C";
-			
+			if (!training) {
+				track[newY][newX] = "C";
+			}
 			positionX = newX;
 			positionY = newY;
 			
 			// checks if the car has crossed the finish line
-			crossedFinish = endRace(positionX, positionY); 
+			crossedFinish = endRace(newX, newY, oldX, oldY); 
 		} else {
 
 			// checks if car has crossed finish line before crash
 			// bc a crash after the finish line does not end the race
-			crossedFinish = endRace(positionX, positionY); 
+			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
 			if (!crossedFinish) {
+				System.out.println("not crossed Finish");
 				// places an X on the track to show where the car has crashed on its run
 				track[yCrash][xCrash] = "X";
 				
@@ -124,20 +130,61 @@ public class Car {
 
 	// TODO: fix finish line loc
 	// Checks if the car has crossed the finish line
-	public boolean endRace(int positionX, int positionY) {
+	public boolean endRace(int newX, int newY, int oldX, int oldY) {
 		boolean crossedFinish = false;
 		
-		// checks if the current location is in the array of finish line locations
-		for (int i = 0; i < finishLocs.length; i++) {
-			if (finishLocs[i][0] == positionX && finishLocs[i][1] == positionY) {
-				// are on the finish line
-				crossedFinish = true;
+		// difference between new and old x and y locations
+		int dX = Math.abs(oldX - newX);
+		int dY = Math.abs(oldY - newY);
+				
+		// starting positions for x and y
+		int x = oldX;
+		int y = oldY;
+				
+		// iterator for keeping track of number of times to loop
+		int n = 1 + dX + dY;
+				
+		// determines the sign (and hence direction) to move between locations
+		int xInc = (newX > oldX) ? 1: -1;
+		int yInc = (newY > oldY) ? 1: -1;
+				
+		int error = dX - dY;
+				
+		// each square is size one, so endpoints are offset by 0.5
+		dX *= 2;
+		dY *= 2;
+				
+		// for the entire length of the line
+		for (; n > 0; --n)
+		    {
+				// checks to see if the car crosses a finish line
+			    for (int i = 0; i < finishLocs.length; i++) {
+			    	// check if this x and y location corresponds to a wall
+				    if (finishLocs[i][0] == x && finishLocs[i][1] == y) {
+				    	if (!training) {
+							track[y][x] = "C";
+						}
+						positionX = x;
+						positionY = y;
+				    	crossedFinish = true;
+						}	    		
+			    	} // end for
+
+			        if (error > 0)
+			        {
+			            x += xInc;
+			            error -= dY;
+			        }
+			        else
+			        {
+			            y += yInc;
+			            error += dX;
+			        }
+			    }
+			    
+				// car has not collided with a wall
+				return crossedFinish;
 			}
-		}
-		
-		// returns true if car has crossed the finish line, false otherwise
-		return crossedFinish;
-	}
 
 	// Gets the x component of velocity
 	public int getVelocityX() {
@@ -291,10 +338,12 @@ public class Car {
 		} // end if
 		
 		// makes sure the newX and/or Y values are valid choices
-		track[newY][newX] = "C";		
-		
+		if (!training) {
+			track[newY][newX] = "C";
+		}
 		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
+		
 		// updates the x and y position
 		positionX = newX;
 		positionY = newY;
@@ -308,7 +357,9 @@ public class Car {
 		
 		// put car back at original starting location
 		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
-		track[startLocY][startLocX] = "C";
+		if (!training) {
+			track[startLocY][startLocX] = "C";
+		}
 		
 		positionX = startLocX;
 		positionY = startLocY;
@@ -351,7 +402,9 @@ public class Car {
 		positionX = startLocX;
 		
 		// puts the car on the track
-		track[startLocY][startLocX] = "C";
+		if (!training) {
+			track[startLocY][startLocX] = "C";
+		}
 		carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
 		
 	}
@@ -494,7 +547,6 @@ public class Car {
 	 */
 	
 	public boolean collisionDetection(int newX, int newY, int oldX, int oldY) {
-		
 		
 		// difference between new and old x and y locations
 		int dX = Math.abs(oldX - newX);
