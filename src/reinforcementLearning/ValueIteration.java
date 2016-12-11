@@ -1,6 +1,7 @@
 package reinforcementLearning;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 
 import reinforcementLearning.Driver;
@@ -33,18 +34,19 @@ public class ValueIteration extends Driver {
 				
 		printTrackInfo(algoName, trackName, crashName);
 
+		// keeps track of the time step
 		int t = 0;
 		
+		// creates the racecar
 		Car c = new Car(track, crashChoice);
 
-		//c.putCarAtStart();
+		// puts the car at a random starting position
+		c.putCarAtStart();
+		printTrack(track, t, c, accelerationX, accelerationY);
 		
-		//c.positionX = c.getCarLocation(track)[0];
-		//c.positionY = c.getCarLocation(track)[1];
-		c.positionX = 32;
-		c.positionY = 2;
-		prevPosX = c.positionX;
-		prevPosY = c.positionY;
+		// for the first run, sets the prev x and y position to the current position
+		prevPosX = c.getPositionX();
+		prevPosY = c.getPositionY();
 		
 		// the below is all for testing, MT will remove after finished with car/driver
 		//int newX, int newY, int oldX, int oldY
@@ -52,12 +54,24 @@ public class ValueIteration extends Driver {
 		boolean raceOver = false;
 		
 		// TODO: start at beginning and loop this to see if we come up with any errors (try on every track, with random accel vals) 
-		while (!raceOver) {
+		int i = 0;
+		
+		//while (!raceOver) {
+		while(i < 100) {
+			i++;
+			t++;
+			Random rando = new Random();
+			
+	       	int randomNumX = rando.nextInt(accelVals.length);  
+	       	int randomNumY = rando.nextInt(accelVals.length); 
+	       	
+	       	accelerationX = randomNumX;
+	       	accelerationY = randomNumY;
+	       	
 			// after we make move, check if race is over (value of move car - or whatever we send from Driver will be true)
 			raceOver = drive(c, accelerationX, accelerationY);
 			printTrack(track, t, c, accelerationX, accelerationY);
-			t++;
-			accelerationY = -1;
+			
 		}
 		
 		super.get_logger().log(Level.INFO, "Car has finished race at time " + t);

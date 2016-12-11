@@ -47,7 +47,7 @@ public abstract class Driver {
     abstract void train();
     abstract void test();
  
-		
+	// TODO: only let car crash 100 times	
 	//TODO: change so car just has to cross finish line, not stop there
     // Given the acceleration value from the algorithm (Value Iteration or Q-learning), drive the racecar.
     // There is a non-deterministic element to acceleration, where there is a 20% chance that the acceleration
@@ -75,8 +75,10 @@ public abstract class Driver {
 	public void printTrack(String[][] thisTrack, int t, Car c, int accelerationX, int accelerationY) {
 		String thisLine = "";
 		
-		LOGGER.log(Level.INFO, "Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");	
-		LOGGER.log(Level.INFO, "Acceleration at time step t = " + t + " is (" + accelerationX + "," + accelerationY + ")");
+		LOGGER.log(Level.INFO, "At time t = " + t + ":");
+		LOGGER.log(Level.INFO, "  Position = (" + c.getPositionX() + "," + c.getPositionY() + ")");
+		LOGGER.log(Level.INFO, "  Velocity = (" + c.getVelocityX() + "," + c.getVelocityY() + ")");	
+		LOGGER.log(Level.INFO, "  Acceleration = (" + accelerationX + "," + accelerationY + ")");
 		
 		for (int i = 0; i < thisTrack.length; i++) {
 			thisLine = "";
