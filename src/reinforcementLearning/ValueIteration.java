@@ -51,7 +51,6 @@ public class ValueIteration extends Driver {
 		boolean raceOver = false;
 		
 		while (!raceOver) {
-			i++;
 			t++;
 			Random rando = new Random();
 			
@@ -81,7 +80,6 @@ public class ValueIteration extends Driver {
 		// TODO Auto-generated method stub
 		
 	}
-	
 
 	// info for printing out for samples run
 	public void printTrackInfo(String algoName, String trackName,
