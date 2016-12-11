@@ -38,6 +38,9 @@ public class ValueIteration extends Driver {
     // holds the racetrack and variables selected by the user
     private String[][] trainTrack;
     private String[][] testTrack;
+    private String[][] cleanTrack;
+    
+    
     private String algoName;
     private String trackName;
     private String crashName;
@@ -68,9 +71,11 @@ public class ValueIteration extends Driver {
         this.trainTrack = trainTrack;
 
         testTrack = new String[trainTrack.length][];
-
+        cleanTrack = new String[trainTrack.length][];
 
         this.testTrack = copyOf(trainTrack);
+        this.cleanTrack = copyOf(trainTrack);
+        
         this.algoName = algoName;
         this.trackName = trackName;
         this.crashName = crashName;
@@ -91,8 +96,17 @@ public class ValueIteration extends Driver {
         trainCar.velocityX = 3;
         trainCar.velocityY = -4;
         trainCar.newPosition(1,1);
-        String a = trainTrack[trainCar.positionX][trainCar.positionY];
-
+        String a = trainTrack[trainCar.positionY][trainCar.positionX];
+        
+        for (int i = 0; i < cleanTrack.length; i++) {
+        	for (int j = 0; j < cleanTrack[i].length; j++) {
+        		System.out.print(cleanTrack[i][j]);
+        	}
+        	System.out.println();
+        }
+        
+        
+        
 //        train();
 //        super.get_logger().log(Level.INFO, "Done Training!");
 //        testCar = new Car(testTrack, crashChoice);
@@ -174,7 +188,8 @@ public class ValueIteration extends Driver {
             int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
             finished = drive(testCar, xa, ya);
             t++;
-            printTrackConsole(testTrack, t, trainCar, xa, ya);
+            //printTrackConsole(testTrack, t, trainCar, xa, ya);
+            printTrack(testTrack, t, testCar, xa, ya);
         }
 
     }
@@ -318,7 +333,6 @@ public class ValueIteration extends Driver {
         policy.put(state, bestAction);
         }
     }
-
-
+    
     }
 
