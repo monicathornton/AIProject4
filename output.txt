@@ -1,33 +1,7 @@
-Running Q-learning on Simple-track with in situ restart on crash.
+Running Q-learning on Training-track with in situ restart on crash.
 
-BOOM! Crashed into a wall at (2, 0). Crash # 1
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 2
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 3
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 4
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 5
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 6
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 7
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 8
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (2, 0). Crash # 9
-After crash restart at (0, 0)
-Car on start line at (1, 3)
-BOOM! Crashed into a wall at (5, 0). Crash # 1
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (5, 0). Crash # 2
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (5, 0). Crash # 3
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (5, 0). Crash # 4
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (5, 0). Crash # 5
-After crash restart at (0, 0)
-BOOM! Crashed into a wall at (5, 0). Crash # 6
-After crash restart at (0, 0)
+Car on start line at (2, 6)
+Car on start line at (4, 6)
+Car on start line at (6, 6)
+Car on start line at (3, 6)
+Car on start line at (5, 6)

@@ -32,6 +32,7 @@ local:
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.Arrays;
 
 public class ValueIteration extends Driver {
     // holds the racetrack and variables selected by the user
@@ -52,10 +53,10 @@ public class ValueIteration extends Driver {
 
     private double normalCellRewoard = -0.4;
     private int[] velocityPossibilities = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
-    private String[] actions = {"00", "11", "-1-1",
-            "01", "10",
-            "0-1", "-10",
-            "1-1", "-11"};
+    private String[] actions = {"0,0", "1,1", "-1,-1",
+            "0,1", "1,0",
+            "0,-1", "-1,0",
+            "1,-1", "-1,1"};
 
     private Car trainCar;
     private Car testCar;
@@ -67,10 +68,9 @@ public class ValueIteration extends Driver {
         this.trainTrack = trainTrack;
 
         testTrack = new String[trainTrack.length][];
-        for(int i = 0; i < trainTrack.length; i++)
-            testTrack[i] = trainTrack[i].clone();
 
-        this.testTrack = trainTrack.clone();
+
+        this.testTrack = copyOf(trainTrack);
         this.algoName = algoName;
         this.trackName = trackName;
         this.crashName = crashName;
@@ -85,13 +85,11 @@ public class ValueIteration extends Driver {
 
         printTrackConsole(trainTrack, t, trainCar, 0, 0);
 
-        //bug replication
-//        trainCar.positionX = 9;
-//        trainCar.positionY = 7;
-//        trainCar.velocityX = 3;
-//        trainCar.velocityY = -4;
-//        trainCar.newPosition(1,1);
-//        String a = trainTrack[trainCar.positionX][trainCar.positionY];
+//        //bug replication
+//                     x, y, xv, yv
+        setTrainState("8,19,-1,1");
+        trainCar.newPosition(-1, 1);
+        String a = trainTrack[trainCar.positionX][trainCar.positionY];
 
         train();
         super.get_logger().log(Level.INFO, "Done Training!");
@@ -102,6 +100,15 @@ public class ValueIteration extends Driver {
 
     }
 
+    public String[][] copyOf(String[][] input) {
+        if (input == null)
+            return null;
+        String[][] result = new String[input.length][];
+        for (int r = 0; r < input.length; r++) {
+            result[r] = input[r].clone();
+        }
+        return result;
+    }
 
     void train() {
         createStates();
@@ -127,8 +134,9 @@ public class ValueIteration extends Driver {
                     double temp = calcTransition(state, action);
                     if (maxAction < temp) {
                         maxAction = temp;
-                        actX = Integer.valueOf(Character.getNumericValue(state.charAt(0)));
-                        actY = Integer.valueOf(Character.getNumericValue(state.charAt(1)));
+                        String[] stateParts = state.split(",");
+                        actX = Integer.valueOf(stateParts[0]);
+                        actY = Integer.valueOf(stateParts[1]);
                     }
                 }
 
@@ -157,12 +165,9 @@ public class ValueIteration extends Driver {
         boolean finished = false;
         int t = 0;
         printTrackConsole(testTrack, t, trainCar, 0, 0);
-        //TODO: better starting
-        int[][] what = testCar.startLocs;
-        testCar.positionX = 1;
-        testCar.positionY = 3;
+        testCar.putCarAtStart();
         while (!finished) {
-            String curState = String.format("%d%d%d%d", testCar.positionY, testCar.positionX, testCar.velocityX, testCar.velocityY);
+            String curState = String.format("%d,%d,%d,%d", testCar.positionX, testCar.positionY, testCar.velocityX, testCar.velocityY);
             String action = policy.get(curState);
             int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
             int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
@@ -185,27 +190,28 @@ public class ValueIteration extends Driver {
        returns P(s'|s, a)*U(s')
     */
     private double calcTransition(String curState, String action) {
-            // utility and possibility of staying in place
-            double total = stayInPlace * states.get(curState);
+        // utility and possibility of staying in place
+        double total = stayInPlace * states.get(curState);
 
         double newStateUtility = 0.0;
         try {
-             newStateUtility = trainMove(action);
-        }
-        catch (Exception e){
+            newStateUtility = trainMove(action);
+        } catch (Exception e) {
             newStateUtility = trainMove(action);
         }
 
-            // utility and possibility of moving
-            total += successfulMove * newStateUtility;
-            return total;
+
+        // utility and possibility of moving
+        total += successfulMove * newStateUtility;
+        return total;
 
     }
 
     private Double trainMove(String action) {
         try {
-            int xa = Integer.valueOf(Character.getNumericValue(action.charAt(0)));
-            int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
+            String[] actionParts = action.split(",");
+            int xa = Integer.valueOf(actionParts[0]);
+            int ya = Integer.valueOf(actionParts[1]);
 
             String newState;
 
@@ -217,14 +223,13 @@ public class ValueIteration extends Driver {
 
 
             if (trainTrack[trainCar.positionX][trainCar.positionY].equals("#") || trainTrack[trainCar.positionX][trainCar.positionY].equals("X")) {
-                newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, 0, 0);
+                newState = String.format("%d,%d,%d,%d", trainCar.positionX, trainCar.positionY, 0, 0);
             } else {
 
-                newState = String.format("%d%d%d%d", trainCar.positionX, trainCar.positionY, trainCar.velocityX, trainCar.velocityY);
+                newState = String.format("%d,%d,%d,%d", trainCar.positionX, trainCar.positionY, trainCar.velocityX, trainCar.velocityY);
             }
             return states.get(newState);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Train Move");
             return 0.0;
         }
@@ -239,27 +244,14 @@ public class ValueIteration extends Driver {
     }
 
     private void setTrainState(String curState) {
-        this.trainCar.positionX = Integer.valueOf(Character.getNumericValue(curState.charAt(0)));
-        this.trainCar.positionY = Integer.valueOf(Character.getNumericValue(curState.charAt(1)));
+        String[] stateParts = curState.split(",");
 
-        if (curState.charAt(2) == '-') {  //-x
-            this.trainCar.velocityX = 0 - Integer.valueOf(Character.getNumericValue(curState.charAt(3)));
-            if (curState.charAt(4) == '-') {  //-y
-                this.trainCar.velocityY = 0 - Integer.valueOf(Character.getNumericValue(curState.charAt(5)));
-            } else {  //y
-                this.trainCar.velocityY = Integer.valueOf(Character.getNumericValue(curState.charAt(4)));
-            }
-        } else {  //x
-            this.trainCar.velocityX = Integer.valueOf(Character.getNumericValue(curState.charAt(2)));
-            if (curState.charAt(3) == '-') {  //y
-                this.trainCar.velocityY = 0 - Integer.valueOf(Character.getNumericValue(curState.charAt(4)));
-            } else {   //y
-                this.trainCar.velocityY = Integer.valueOf(Character.getNumericValue(curState.charAt(3)));
-            }
+        this.trainCar.positionX = Integer.valueOf(stateParts[0]);
+        this.trainCar.positionY = Integer.valueOf(stateParts[1]);
+        this.trainCar.velocityX = Integer.valueOf(stateParts[2]);
+        this.trainCar.velocityY = Integer.valueOf(stateParts[3]);
 
-        }
     }
-
 
 
     /*
@@ -268,18 +260,20 @@ public class ValueIteration extends Driver {
     private void createStates() {
         // for each cell not a wall cell
         for (int row = 0; row < trainTrack.length; row++) {
-            for (int col = 0; col < trainTrack[0].length; col++) {
+            for (int col = 0; col < trainTrack[row].length; col++) {
                 // for each possible combination of velocities in x and y direction
-                String key = String.format("%d%d%d%d", col, row, 0, 0);
+//                trainTrack[row][col] = "D";
+//                printTrackConsole(trainTrack, 0, trainCar, 0, 0);
+                String key = String.format("%d,%d,%d,%d", row, col, 0, 0);
 
                 if (trainTrack[row][col].equals("#")) {  //You're only ever going to be at zero when against (actually in) a wall
                     states.put(key, -10.0);
                 } else {
 
-                    for (int xv = 0; xv < velocityPossibilities.length - 1; xv++) {
-                        for (int yv = 0; yv < velocityPossibilities.length - 1; yv++) {
+                    for (int xv = 0; xv < velocityPossibilities.length; xv++) {
+                        for (int yv = 0; yv < velocityPossibilities.length; yv++) {
 
-                            key = String.format("%d%d%d%d", col, row, velocityPossibilities[xv], velocityPossibilities[yv]);
+                            key = String.format("%d,%d,%d,%d", row, col, velocityPossibilities[xv], velocityPossibilities[yv]);
 
                             if (trainTrack[row][col].equals("F")) {
                                 states.put(key, +10.0);
@@ -294,6 +288,9 @@ public class ValueIteration extends Driver {
     }
 
 
+    /*
+        Create a dictionary of policies with state -> action
+     */
     private void createPolicy() {
         double maxUtility = -10000.0;
         String bestAction = "00";
@@ -309,10 +306,10 @@ public class ValueIteration extends Driver {
                     bestAction = action;
                 }
             }
-        policy.put(state, bestAction);
+            policy.put(state, bestAction);
         }
     }
 
 
-    }
+}
 
