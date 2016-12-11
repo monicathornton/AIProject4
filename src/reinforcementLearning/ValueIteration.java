@@ -1,30 +1,35 @@
 package reinforcementLearning;
 
 /*
-procedure value_iteration(P,r, θ )
 inputs:
-	P is state transition function specifying P(s|a,s')
-	r is a reward function R(s, a,s')
-	θ a threshold θ > 0
-returns:
-	π[s] approximately optimal policy
-	V[s] value function
-data structures:
-	Vk [s] a sequence of value functions
+	States S
+	action A(s)
+	transition model P(s'|a,s)
+	rewards R(s)
+	discount y
+	error e
+
+local:
+	U, U' vectors of utilities for states in S, initially 0
+	delta, max change in utility of any state in a single iteration
 
 ###############################
-	begin
-		for k = 1 : ∞
-			for each state s
-				Vk [s] = maxa SUM P(s|a,s)(R(s, a,s) + γ Vk−1[s])
-			if ∀s |Vk (s) − Vk−1(s)| < θ
-				for each state s
-					π(s) = arg maxa SUM P(s|a,s)(R(s, a,s) + γ Vk−1[s])
-		return π, Vk
-	end
+
+	repeat
+		U <- U';
+		delta <- 0
+
+		for each state s in S do
+			U'[s] <- R(s) + γarg maxa SUM P(s'|a,s)U[s']
+			if | U'[s] - U[s] | < delta
+				delta <- | U'[s] - U[s] |
+	until
+		delta < e(1 - γ) / Y
+
 ###############################
  */
 import java.io.IOException;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -38,11 +43,19 @@ public class ValueIteration extends Driver {
 	private String crashName;
 	private String crashChoice;
 
-	private HashMap states = new HashMap<String, Double>();
-	private final double successfulMove = .80;
-	private double finishCellReward = 0;
-	private double normalCellRewoard = -1;
+	private HashMap states = new HashMap<String, Double>(); //c(x,y)v(x,y) -> utility
+	private final double successfulMove = .8;
+	private final double stayInPlace = .2;
+	private HashMap policy = new HashMap<String, Double>(); //state -> action
+
+
+
+	private double normalCellRewoard = -0.4;
 	private int[] velocityPossibilities = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
+	private String[] actions = {"00",  "11", "-1-1",
+								"01",  "10",
+								"0-1", "-10",
+								"1-1", "-11"};
 
 	// the previous position of the car (used for collision detection and map updates)
 	private int prevPosX;
@@ -86,7 +99,11 @@ public class ValueIteration extends Driver {
 	
 	void train() {
 		createStates();
-		System.out.println("HI");
+		double delta = 0;
+		double threshold = 1;
+		while (delta < threshold){
+
+		}
 	}
 
 	void test() {
@@ -131,15 +148,17 @@ public class ValueIteration extends Driver {
 		}
 	}
 
-	private boolean successfulMove(String curLocation, String wantedLocation){
-		double d = Math.random();
 
-		if (d < successfulMove){
-			return true;
-		}
-		else{
-			return false;
-		}
+
+	/*
+	 	returns P(s|a,s)
+	 */
+	private double transitionResult(String curentState, String wantedState){
+		return 0.0;
 	}
+
+
+
+
 }
 
