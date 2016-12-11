@@ -38,6 +38,9 @@ public class ValueIteration extends Driver {
     // holds the racetrack and variables selected by the user
     private String[][] trainTrack;
     private String[][] testTrack;
+    private String[][] cleanTrack;
+    
+    
     private String algoName;
     private String trackName;
     private String crashName;
@@ -68,9 +71,11 @@ public class ValueIteration extends Driver {
         this.trainTrack = trainTrack;
 
         testTrack = new String[trainTrack.length][];
-
+        cleanTrack = new String[trainTrack.length][];
 
         this.testTrack = copyOf(trainTrack);
+        this.cleanTrack = copyOf(trainTrack);
+        
         this.algoName = algoName;
         this.trackName = trackName;
         this.crashName = crashName;
@@ -85,17 +90,26 @@ public class ValueIteration extends Driver {
 
         printTrackConsole(trainTrack, t, trainCar, 0, 0);
 
+
+        //bug replication
+        trainCar.positionX = 9;
+        trainCar.positionY = 7;
+        trainCar.velocityX = 3;
+        trainCar.velocityY = -4;
+        trainCar.newPosition(1,1);
+        String a = trainTrack[trainCar.positionY][trainCar.positionX];
+        
 //        //bug replication
 //                     x, y, xv, yv
         setTrainState("8,19,-1,1");
         trainCar.newPosition(-1, 1);
-        String a = trainTrack[trainCar.positionX][trainCar.positionY];
 
         train();
         super.get_logger().log(Level.INFO, "Done Training!");
         testCar = new Car(testTrack, crashChoice);
         test();
         super.get_logger().log(Level.INFO, "Done Testing!");
+
 
 
     }
@@ -173,7 +187,8 @@ public class ValueIteration extends Driver {
             int ya = Integer.valueOf(Character.getNumericValue(action.charAt(1)));
             finished = drive(testCar, xa, ya);
             t++;
-            printTrackConsole(testTrack, t, trainCar, xa, ya);
+            //printTrackConsole(testTrack, t, trainCar, xa, ya);
+            printTrack(testTrack, t, testCar, xa, ya);
         }
 
     }
@@ -309,7 +324,6 @@ public class ValueIteration extends Driver {
             policy.put(state, bestAction);
         }
     }
-
 
 }
 
