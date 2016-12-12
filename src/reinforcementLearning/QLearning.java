@@ -1,6 +1,7 @@
 package reinforcementLearning;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -23,6 +24,7 @@ public class QLearning extends Driver {
 	private int maxIter;
 	private double alpha = 0.1; // learning rate
 	private double gamma = 0.9; // discount factor
+	private int finishingCars;
 
 	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;// HashMap<Position,
 																// HashMap<Velocity,
@@ -49,16 +51,18 @@ public class QLearning extends Driver {
 	void train() {
 		// car.setTraining();
 		initialize();
-		int finishingCars = 0;
+		//printRewards();
+		System.out.println();
+		printTrackConsole(track, 0, car, 0,0);
+		finishingCars = 0;
 		// super.get_logger().log(Level.INFO, rewards.toString());
 		for (int i = 0; i < maxIter; i++) {
 			
 			car.setTraining();
 			// select position
-			int[][] locs = car.openLocs;
-			int po = (int) Math.floor(Math.random() * locs.length);
+			ArrayList<Pair> positions = new ArrayList<Pair>(rewards.keySet());
 			
-			Pair position = new Pair(locs[po][0], locs[po][1]);// TODO select a real position!
+			Pair position = positions.get((int)Math.floor(Math.random()*positions.size()));// TODO select a real position!
 			// select Velocity
 			int velocityx = (int) Math.floor(Math.random() * 11) - 5;
 			int velocityy = (int) Math.floor(Math.random() * 11) - 5;
@@ -72,12 +76,14 @@ public class QLearning extends Driver {
 					car.positionY = position.y;
 					car.velocityX = velocity.x;
 					car.velocityY = velocity.y;
+					car.startLocX = position.x;
+					car.startLocY = position.y;
 					car.newPosition(act.x, act.y);
 
 					Pair position2 = new Pair(car.positionX, car.positionY);
 					Pair velocity2 = new Pair(car.velocityX, car.velocityY);
-
-					printTrackConsole(track, m, car, act.x, act.y);
+					System.out.println("Training Info:");
+					printTrackConsole(track, i, car, act.x, act.y);
 					if (rewards.get(position2) != null) {
 
 						// find max reward of actions
@@ -98,47 +104,13 @@ public class QLearning extends Driver {
 						//HashMap<Pair, HashMap<Pair, Double>> bad2 = new HashMap<Pair, HashMap<Pair, Double>>();
 						//bad2.put(velocity2, bad);
 						//rewards.put(position2, bad2);
-						System.out.println("BAD MOVES:" + position2.x +" " + position2.y);
+						//System.out.println("BAD MOVES:" + position2.x +" " + position2.y + " , " + velocity2.x + " " + velocity2.y);
 					}
 				}
 			}
 			// car.training = false;
 
-			
-			car.putCarAtStart();
-			car.velocityX = 0;
-			car.velocityY = 0;
-			Pair pos = new Pair(car.positionX, car.positionY);
-			Pair vel = new Pair(0, 0);
-			boolean raceover = false;
-			int t = 0;
-			int badMoves = 0;
-			int badMovesLimit = track.length * track[0].length * 2;
-			while (!raceover && car.carCrashes <= 100 && badMoves < badMovesLimit) {
-				// System.out.println(t);
-				if (rewards.get(pos) != null) {
-					Pair maxact = getMaxAction(rewards.get(pos).get(vel));
-					raceover = drive(car, maxact.x, maxact.y);
-					// if(car.positionX == pos.x && car.positionY == pos.y){
-					// System.out.println(car.positionX + " "+ pos.x + " " +
-					// car.positionY + " " + pos.y);
-					// }
-					pos.x = car.positionX;
-					pos.y = car.positionY;
-					vel.x = car.velocityX;
-					vel.y = car.velocityY;
-					printTrackConsole(track, t, car, maxact.x, maxact.y);
-
-				} else {
-					System.out.println("BAD MOVES:" + pos.x +" " + pos.y);
-					badMoves++;
-				}
-				t++;
-
-			}
-			if (raceover) {
-				finishingCars++;
-			}
+			runthrough();
 		}
 		System.out.println(finishingCars);
 
@@ -147,7 +119,52 @@ public class QLearning extends Driver {
 	void test() {
 		// TODO Auto-generated method stub
 	}
+	void runthrough(){
+		System.out.println("Iteration Info");
+		car.putCarAtStart();
+		car.carCrashes = 0;
+		car.velocityX = 0;
+		car.velocityY = 0;
+		car.startLocX = car.positionX;
+		car.startLocY = car.positionY;
+		Pair pos = new Pair(car.positionX, car.positionY);
+		Pair vel = new Pair(0, 0);
+		boolean raceover = false;
+		int t = 0;
+		int badMoves = 0;
+		int badMovesLimit = track.length * track[0].length * 2;
+		//System.out.println(raceover + " " + t + " " + badMoves + " " + badMovesLimit + " car crashes: " + car.carCrashes);
+		while (!raceover && car.carCrashes <= 100 && badMoves < badMovesLimit) {
+			// System.out.println(t);
+			System.out.println(raceover + " " + t + " " + badMoves + " " + badMovesLimit + " car crashes: " + car.carCrashes);
+			
+			if (rewards.get(pos) != null) {
+				Pair maxact = getMaxAction(rewards.get(pos).get(vel));
+				raceover = drive(car, maxact.x, maxact.y);
+				// if(car.positionX == pos.x && car.positionY == pos.y){
+				// System.out.println(car.positionX + " "+ pos.x + " " +
+				// car.positionY + " " + pos.y);
+				// }
+				pos.x = car.positionX;
+				pos.y = car.positionY;
+				vel.x = car.velocityX;
+				vel.y = car.velocityY;
+				
+				printTrackConsole(track, t, car, maxact.x, maxact.y);
 
+			} else {
+				System.out.println("BAD MOVES:" + pos.x +" " + pos.y + " , " + vel.x + " " + vel.y);
+				
+				//printRewards();
+				badMoves++;
+			}
+			t++;
+
+		}
+		if (raceover) {
+			finishingCars++;
+		}
+	}
 	void initialize() {
 		// get open positions
 		int[][] locs = car.openLocs;
@@ -180,7 +197,7 @@ public class QLearning extends Driver {
 
 
 		}
-		
+		//System.out.println(rewards.keySet().size());
 		int[][] flocs = car.finishLocs;
 		//for each open position:
 		for(int i = 0; i < flocs.length; i++){
@@ -210,7 +227,7 @@ public class QLearning extends Driver {
 
 
 		}
-		
+		//System.out.println(rewards.keySet().size());
 		int[][] slocs = car.startLocs;
 
 		//for each open position:
@@ -241,6 +258,7 @@ public class QLearning extends Driver {
 
 
 		}
+		//System.out.println(rewards.keySet().size());
 
 	}
 
@@ -278,5 +296,27 @@ public class QLearning extends Driver {
 			}
 		}
 		return maxEntry.getKey();
+	}
+	public void printRewards(){
+		ArrayList<Pair> positions = new ArrayList<Pair>(rewards.keySet());
+		for(Pair p : positions){
+			System.out.print("Position: (" + p.x + " , " + p.y +"), ");
+//			ArrayList<Pair> velocities = new ArrayList<Pair>(rewards.get(p).keySet());
+//			for(Pair v : velocities){
+//				System.out.print("Velocity: (" + v.x + " , " + v.y +"), ");
+//				ArrayList<Pair> actions = new ArrayList<Pair>(rewards.get(p).get(v).keySet());
+//				for(Pair a : actions){
+//					
+//					double r = rewards.get(p).get(v).get(a);
+//					
+//					
+//					System.out.print("Action: (" + a.x + " , " + a.y +"), ");
+//					System.out.print("Reward: " + r + "   ");
+//					
+//					
+//				}
+//			}
+			System.out.println();
+		}
 	}
 }

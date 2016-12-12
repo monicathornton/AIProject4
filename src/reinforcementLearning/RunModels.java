@@ -62,7 +62,7 @@ public class RunModels {
 //			}
 //
 //		} // end while: user has picked a valid track choice
-		trackChoice = "l";
+		trackChoice = "s";
 		
 //		// gives the user the crash choices, forces them to choose from the list
 //		while (!crashChoice.equalsIgnoreCase("b") && !crashChoice.equalsIgnoreCase("w") && !crashChoice.equalsIgnoreCase("x")) {

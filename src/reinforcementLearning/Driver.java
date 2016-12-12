@@ -93,7 +93,7 @@ public abstract class Driver {
     // print out the racetrack
     public void printTrackConsole(String[][] thisTrack, int t, Car c, int accelerationX, int accelerationY) {
         String thisLine = "";
-
+        System.out.println("Position = (" + c.getPositionX() + "," + c.getPositionY() + ")");
         System.out.println("Velocity at time step t = " + t + " is (" + c.velocityX + "," + c.velocityY + ")");
         System.out.println("Acceleration at time step t = " + t + " is (" + accelerationX + "," + accelerationY + ")");
 
