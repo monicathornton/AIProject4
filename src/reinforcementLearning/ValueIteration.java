@@ -44,6 +44,7 @@ public class ValueIteration extends Driver {
 
 
     private String algoName;
+    private int t;
     private String trackName;
     private String crashName;
     private String crashChoice;
@@ -85,31 +86,18 @@ public class ValueIteration extends Driver {
         this.trainCar.setTraining();
         printTrackInfo(algoName, trackName, crashName);
 
-        int t = 0;
 
-
-        printTrackConsole(trainTrack, t, trainCar, 0, 0);
-
-
-        //bug replication
-        trainCar.positionX = 9;
-        trainCar.positionY = 7;
-        trainCar.velocityX = 3;
-        trainCar.velocityY = -4;
-        trainCar.newPosition(1, 1);
-        String a = trainTrack[trainCar.positionY][trainCar.positionX];
-
-//        //bug replication
-//                     x, y, xv, yv
-        setTrainState("8,19,-1,1");
-        trainCar.newPosition(-1, 1);
-
+        super.get_logger().log(Level.INFO, "Started training.\n");
         train();
-        super.get_logger().log(Level.INFO, "Done Training!");
-        testCar = new Car(testTrack, crashChoice);
-        test();
-        super.get_logger().log(Level.INFO, "Done Testing!");
+        super.get_logger().log(Level.INFO, "Done training.\n");
+        super.get_logger().log(Level.INFO, "Number of actions: " + actions.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size() );
+        super.get_logger().log(Level.INFO, "Gamma = " + gamma + "\nError " + error);
 
+        testCar = new Car(testTrack, crashChoice);
+        super.get_logger().log(Level.INFO, "Started testing.\n");
+        test();
+        super.get_logger().log(Level.INFO, "Done testing, algorithm complete.");
+        super.get_logger().log(Level.INFO, "Number of crashes: " + testCar.carCrashes + "\nNumber of timesteps: " + t);
 
     }
 
@@ -178,9 +166,9 @@ public class ValueIteration extends Driver {
         int sameSpot = 0;
         String oldSpot = "00";
         boolean finished = false;
-        int t = 0;
+        t = 0;
         testCar.putCarAtStart();
-        printTrackConsole(testTrack, t, testCar, 0, 0);
+        printTrack(testTrack, t, testCar, 0, 0);
         while (!finished) {
             String curState = String.format("%d,%d,%d,%d", testCar.positionY, testCar.positionX, testCar.velocityX, testCar.velocityY);
 
@@ -206,7 +194,7 @@ public class ValueIteration extends Driver {
             finished = drive(testCar, xa, ya);
             t++;
             //printTrackConsole(testTrack, t, trainCar, xa, ya);
-            printTrackConsole(testTrack, t, testCar, xa, ya);
+            printTrack(testTrack, t, testCar, xa, ya);
             oldSpot = String.format("%d%d", testCar.positionY, testCar.positionX);
         }
         System.out.println("Done!");
