@@ -1,41 +1,14 @@
 package reinforcementLearning;
 
-/*
-inputs:
-	States S
-	action A(s)
-	transition model P(s'|a,s)
-	rewards R(s)
-	discount y
-	error e
-
-local:
-	U, U' vectors of utilities for states in S, initially 0
-	delta, max change in utility of any state in a single iteration
-
-###############################
-
-	repeat
-		U <- U';
-		delta <- 0
-
-		for each state s in S do
-			U'[s] <- R(s) + γarg maxa SUM P(s'|a,s)U[s']
-			if | U'[s] - U[s] | < delta
-				delta <- | U'[s] - U[s] |
-	until
-		delta < e(1 - γ) / Y
-
-###############################
- */
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.Arrays;
 
+/*
+   Learning algorithm for optimizing a timed run of a racecar through differently shaped racetracks.
+*/
 public class ValueIteration extends Driver {
     // holds the racetrack and variables selected by the user
     private String[][] trainTrack;
@@ -49,20 +22,23 @@ public class ValueIteration extends Driver {
     private String crashName;
     private String crashChoice;
 
-    private HashMap<String, Double> states = new HashMap<>(); //cell xy then velocity xy -> utility
+    //cell xy then velocity xy -> utility
+    private HashMap<String, Double> states = new HashMap<>();
+    //probabilities of sucessfully moving or staying in place for each move
     private final double successfulMove = .8;
     private final double stayInPlace = .2;
-    
+
     // appropriate values of gamma and error were determined by pruning process
     // selected values for gamma and error that gave best results on tuning track 
     private final double gamma = .07; //prefer long term rewards
     private final double error = 0.000000001;
-    
-    private HashMap<String, ArrayList> policy = new HashMap(); //state -> action
+
+    //state -> action
+    private HashMap<String, ArrayList> policy = new HashMap();
 
 
     private int[] velocityPossibilities = {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5};
-    private String[] actions = {"0,0", "1,1", "-1,-1",
+    private String[] actionsPossibilities = {"0,0", "1,1", "-1,-1",
             "0,1", "1,0",
             "0,-1", "-1,0",
             "1,-1", "-1,1"};
@@ -70,33 +46,39 @@ public class ValueIteration extends Driver {
     private Car trainCar;
     private Car testCar;
 
-
-    //TODO: clean this up when done testing
+    /*
+        Constructor
+     */
     public ValueIteration(String[][] trainTrack, String algoName, String trackName, String crashName, String crashChoice) throws IOException {
+        //track to train on
         this.trainTrack = trainTrack;
-
+        //track to run actual race on
         testTrack = new String[trainTrack.length][];
+        //clean version of original track
         cleanTrack = new String[trainTrack.length][];
 
+        //deep copy tracks
         this.testTrack = copyOf(trainTrack);
         this.cleanTrack = copyOf(trainTrack);
 
+        //run information
         this.algoName = algoName;
         this.trackName = trackName;
         this.crashName = crashName;
         this.crashChoice = crashChoice;
-
         this.trainCar = new Car(trainTrack, crashChoice);
         this.trainCar.setTraining();
         printTrackInfo(algoName, trackName, crashName);
 
 
+        //train value iteration algorithm to obtain all utilities and an optimal policy
         super.get_logger().log(Level.INFO, "Started training.\n");
         train();
         super.get_logger().log(Level.INFO, "Done training.\n");
-        super.get_logger().log(Level.INFO, "Number of actions: " + actions.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size() );
+        super.get_logger().log(Level.INFO, "Number of actionsPossibilities: " + actionsPossibilities.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size());
         super.get_logger().log(Level.INFO, "Gamma = " + gamma + "\nError " + error);
 
+        //run car on track given information from optimal policy
         testCar = new Car(testTrack, crashChoice);
         super.get_logger().log(Level.INFO, "Started testing.\n");
         test();
@@ -105,6 +87,9 @@ public class ValueIteration extends Driver {
 
     }
 
+    /*
+        Create a deep copy of a 2d String array
+     */
     public String[][] copyOf(String[][] input) {
         if (input == null)
             return null;
@@ -115,39 +100,66 @@ public class ValueIteration extends Driver {
         return result;
     }
 
+    /*
+        Setup data structures and run value iteration algorithm, then create policy dictionary
+     */
     void train() {
         createStates();
+        valueIterate();
+        createPolicy();
+    }
+
+    /*
+        Actual value iteration algorithm. Loop through all states (combinations of position and velocities),
+        updating utilities according to immediate rewards and utility of next state after action taken.
+        Continue until change in states' utilities' is below a threshold.
+     */
+    private void valueIterate() {
+        //difference in former and updated utility
         double delta = 0;
         double threshold = error * (1 - gamma) / gamma;
 
+        //state after action taken
         String statePrime;
+        //former utility
         double U = 0.0;
+        //new utility
         double UPrime = 0.0;
-        int actX = 0;
-        int actY = 0;
+        //former x location
+        int oldX = 0;
+        //former y location
+        int oldY = 0;
 
         while (delta < threshold) {
             //calculate utility for each state
             U = UPrime;
             for (String state : states.keySet()) {
 
-                // get action that returns best utility
-                double maxAction = 0.0;
+                double maxActionUtility = 0.0;
+                //set car in approriate state
                 setTrainState(state);
 
-                for (String action : actions) {
+                // get action that returns best utility
+                for (String action : actionsPossibilities) {
+                    //reset track
                     trainTrack = copyOf(cleanTrack);
+
+                    //get utilities of new states according to probability distribution
                     double temp = calcTransition(state, action);
-                    if (maxAction < temp) {
-                        maxAction = temp;
+
+                    //update action if needed
+                    if (maxActionUtility < temp) {
+                        maxActionUtility = temp;
                         String[] stateParts = state.split(",");
-                        actX = Integer.valueOf(stateParts[0]);
-                        actY = Integer.valueOf(stateParts[1]);
+                        oldX = Integer.valueOf(stateParts[0]);
+                        oldY = Integer.valueOf(stateParts[1]);
                     }
                 }
 
-                UPrime = getReward(actX, actY) + gamma * maxAction;
+                //calculate Bellman update
+                UPrime = getReward(oldX, oldY) + gamma * maxActionUtility;
 
+                //Put new utility into states
                 states.put(state, UPrime);
 
 
@@ -162,49 +174,69 @@ public class ValueIteration extends Driver {
 
             }
         }
-
-        createPolicy();
     }
 
+    /*
+        Run car on racetrack until passes finish line. Each action is chosen from the optimal policy function, except
+        when the car has been in the same cell three times consecutively, in which case a random action is added to the
+        possible actions for the state.
+     */
     void test() {
+        //setup and show track
+
         int sameSpot = 0;
         String oldSpot = "00";
         boolean finished = false;
         t = 0;
+
         testCar.putCarAtStart();
         printTrack(testTrack, t, testCar, 0, 0);
+
+        //finished is defined as being on or crossing a finished cell
         while (!finished) {
+            //get current state, ie position and x and y velocities
             String curState = String.format("%d,%d,%d,%d", testCar.positionY, testCar.positionX, testCar.velocityX, testCar.velocityY);
 
-            if (String.format("%d%d", testCar.positionY, testCar.positionX).equals(oldSpot)){
+            //Check to see if the car has moved to a different cell than the last iteration
+            if (String.format("%d%d", testCar.positionY, testCar.positionX).equals(oldSpot)) {
                 sameSpot++;
-            }
-            else{
+            } else {
                 sameSpot = 0;
             }
 
+            //get best actions as defined by policy
             ArrayList<String> preferredActions = policy.get(curState);
             Random r = new Random();
 
-            if (sameSpot > 3){  //Don't get stuck in death loop (anyone seen supernatural?)
-                int index = r.nextInt(actions.length);
-                preferredActions.add(actions[index]);
+            //Don't get stuck in death loop (anyone seen supernatural?)
+            //this happens when the policy is wrong and has the car stay in place
+            //or repeated commit suicide against wall
+            //to counter, just add element of randomness to choice
+            if (sameSpot > 3) {
+                int index = r.nextInt(actionsPossibilities.length);
+                preferredActions.add(actionsPossibilities[index]);
             }
 
+            //choose action at random from perferred acitons
             int index = r.nextInt(preferredActions.size());
             String[] actionParts = preferredActions.get(index).split(",");
             int xa = Integer.valueOf(actionParts[0]);
             int ya = Integer.valueOf(actionParts[1]);
+
+            //actual movement of car
             finished = drive(testCar, xa, ya);
+
+            //update values and print track
             t++;
-            //printTrackConsole(testTrack, t, trainCar, xa, ya);
             printTrack(testTrack, t, testCar, xa, ya);
             oldSpot = String.format("%d%d", testCar.positionY, testCar.positionX);
         }
-        System.out.println("Done!");
-
     }
 
+
+    /*
+        Get reward for movement. All moves cost -1 except a finishing cell, which is 0.
+     */
     private double getReward(int x, int y) {
         if (trainTrack[x][y].equals("F")) {
             return 0.0;
@@ -214,7 +246,7 @@ public class ValueIteration extends Driver {
     }
 
     /*
-       returns P(s'|s, a)*U(s')
+       Calculates the utilities of old state and new state given an action and according to probability distribution.
     */
     private double calcTransition(String curState, String action) {
         // utility and possibility of staying in place
@@ -227,50 +259,50 @@ public class ValueIteration extends Driver {
             newStateUtility = trainMove(action);
         }
 
-
         // utility and possibility of moving
         total += successfulMove * newStateUtility;
         return total;
 
     }
 
+    /*
+        Given an state and action, take the action to put the car into the new state. Because this is training, the
+        probability of successfully or not moving should NOT be included.
+     */
     private Double trainMove(String action) {
-        try {
-            String[] actionParts = action.split(",");
-            int xa = Integer.valueOf(actionParts[0]);
-            int ya = Integer.valueOf(actionParts[1]);
+        String[] actionParts = action.split(",");
+        int xa = Integer.valueOf(actionParts[0]);
+        int ya = Integer.valueOf(actionParts[1]);
 
-            String newState;
+        //actual movement of car
+        this.trainCar.newPosition(xa, ya);
 
-//            if (trainTrack[trainCar.positionY][trainCar.positionX].equals("#") || trainTrack[trainCar.positionY][trainCar.positionX].equals("X") && xa == 0 || ya == 0) {
-//                return 0.0; //We should not remain in place when in a wall!!!
-//            } else {
-//                this.trainCar.newPosition(xa, ya);
-//            }
-            this.trainCar.newPosition(xa, ya);
+        //Calculate new state. If car is in wall or crashed, velocities should always be 0 0.
+        String newState;
+        if (trainTrack[trainCar.positionY][trainCar.positionX].equals("#") || trainTrack[trainCar.positionY][trainCar.positionX].equals("X")) {
+            newState = String.format("%d,%d,%d,%d", trainCar.positionY, trainCar.positionX, 0, 0);
+        } else {
 
-
-            if (trainTrack[trainCar.positionY][trainCar.positionX].equals("#") || trainTrack[trainCar.positionY][trainCar.positionX].equals("X")) {
-                newState = String.format("%d,%d,%d,%d", trainCar.positionY, trainCar.positionX, 0, 0);
-            } else {
-
-                newState = String.format("%d,%d,%d,%d", trainCar.positionY, trainCar.positionX, trainCar.velocityX, trainCar.velocityY);
-            }
-            return states.get(newState);
-        } catch (Exception e) {
-            System.out.println("Train Move");
-            return 0.0;
+            newState = String.format("%d,%d,%d,%d", trainCar.positionY, trainCar.positionX, trainCar.velocityX, trainCar.velocityY);
         }
+
+        //return utility of new state.
+        return states.get(newState);
     }
 
 
-    // info for printing out for samples run
+    /*
+        Print out information regarding track and run
+     */
     public void printTrackInfo(String algoName, String trackName,
                                String crashName) {
         super.get_logger().log(Level.INFO, "Running " + algoName + " on " + trackName + " with " + crashName);
         super.get_logger().log(Level.INFO, "");
     }
 
+    /*
+        Put the car in a new state. Used for training.
+     */
     private void setTrainState(String curState) {
         String[] stateParts = curState.split(",");
 
@@ -289,15 +321,13 @@ public class ValueIteration extends Driver {
         // for each cell not a wall cell
         for (int row = 0; row < trainTrack.length; row++) {
             for (int col = 0; col < trainTrack[row].length; col++) {
-                // for each possible combination of velocities in x and y direction
-//                trainTrack[row][col] = "D";
-//                printTrackConsole(trainTrack, 0, trainCar, 0, 0);
                 String key = String.format("%d,%d,%d,%d", row, col, 0, 0);
 
-                if (trainTrack[row][col].equals("#")) {  //You're only ever going to be at zero when against (actually in) a wall
+                //You're only ever going to be at zero when against (actually in) a wall
+                if (trainTrack[row][col].equals("#")) {
                     states.put(key, -1.0);
                 } else {
-
+                    // for each possible combination of velocities in x and y direction
                     for (int xv = 0; xv < velocityPossibilities.length; xv++) {
                         for (int yv = 0; yv < velocityPossibilities.length; yv++) {
 
@@ -317,7 +347,8 @@ public class ValueIteration extends Driver {
 
 
     /*
-        Create a dictionary of policies with state -> action
+        Create a dictionary of policies with state -> actions. Actions with equal utility are added, and then chosen at
+        random during actual racing.
      */
     private void createPolicy() {
 
@@ -328,19 +359,18 @@ public class ValueIteration extends Driver {
             double maxUtility = -10000.0;
             String bestAction = "00";
             //   for every action
-            for (String action : actions) {
+            for (String action : actionsPossibilities) {
                 double U = trainMove(action);
                 //  if U > maxU then action = bestAction
                 if (U > maxUtility) {
                     maxUtility = U;
                     bestAction = action;
                     allAction.add(bestAction);
-                }
-                else if (U == maxUtility){
+                } else if (U == maxUtility) {
                     allAction.add(action);
                 }
             }
-
+            //update policy and reset for next state
             policy.put(state, allAction);
             allAction = new ArrayList<>();
         }
