@@ -16,23 +16,22 @@ import java.util.logging.Level;
  * 			run car through and record moves and crashes
  */
 public class QLearning extends Driver {
-	private String[][] testTrack;
-	private String[][] cleanTrack;
-	private String[][] trainTrack;
+	private String[][] testTrack; //track for testing
+	private String[][] cleanTrack; //clean track that is copied for each training iteration
+	private String[][] trainTrack; //track to fiddle on for training
 	private String algoName;
 	private String trackName;
-	private String crashName;
-	private Car car;
-	// private Car testCar;
-	private int maxIter;
-	private double alpha = 0.1; // learning rate
+	private String crashName; //crashing type
+	private Car car; //training car
+	private Car testCars; // test and evaluation car
+	private int maxIter; //maximum iterations to run training
+	private int ti; //number of moves made by the testCar in the testing phase
+	private double alpha = 1; // learning rate
 	private double gamma = 0.9; // discount factor
-	private int finishingCars;
+	private int finishingCars; // how many cars in training reached the finish line
 
-	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;// HashMap<Position,
-																// HashMap<Velocity,
-																// HashMap<Action,
-																// Reward>>>
+	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;
+	// HashMap<Position, HashMap<Velocity, HashMap<Action, Reward>>>
 
 	public QLearning(String[][] trainTrack, String algoName, String trackName, String crashName) {
 		this.trainTrack = trainTrack;
@@ -47,45 +46,41 @@ public class QLearning extends Driver {
 		try {
 			car = new Car(trainTrack, crashName);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
-		maxIter = 2000;
-		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>();
+		maxIter = 50000;//set maximum number of training iterations
+		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
-		train();
+		super.get_logger().log(Level.INFO, "Started training.\n");
+        train();
+        super.get_logger().log(Level.INFO, "Done training.\n");
+        super.get_logger().log(Level.INFO, "Started testing.\n");
+        test();
+        super.get_logger().log(Level.INFO, "Done testing, algorithm complete.");
+        super.get_logger().log(Level.INFO, "Number of crashes: " + testCars.carCrashes + "\nNumber of timesteps: " + ti);
+        System.out.println(finishingCars);
 	}
 
 	void train() {
-		// car.setTraining();
-		initialize();
-		// printRewards();
-		System.out.println();
-		printTrackConsole(trainTrack, 0, car, 0, 0);
+		
+		initialize(); // fill the rewards map with initial values
 		finishingCars = 0;
-		// super.get_logger().log(Level.INFO, rewards.toString());
 		for (int i = 0; i < maxIter; i++) {
-			//alpha = alpha - 1/maxIter;
+			alpha = alpha - 1/maxIter;//anneal learning rate
 			car.setTraining();
-			// select position
+			// select Position
 			ArrayList<Pair> positions = new ArrayList<Pair>(rewards.keySet());
-
-			Pair position = positions.get((int) Math.floor(Math.random() * positions.size()));// TODO
-																								// select
-																								// a
-																								// real
-																								// position!
+			Pair position = positions.get((int) Math.floor(Math.random() * positions.size()));
 			// select Velocity
 			int velocityx = (int) Math.floor(Math.random() * 11) - 5;
 			int velocityy = (int) Math.floor(Math.random() * 11) - 5;
 			Pair velocity = getVelocityPair(position, velocityx, velocityy);
 			for (int m = -1; m <= 1; m++) {// for each action
 				for (int n = -1; n <= 1; n++) {
-
 					Pair act = getActionPair(position, velocity, m, n);
 					// calculate next position and velocity
-
 					car.positionX = position.x;
 					car.positionY = position.y;
 					car.velocityX = velocity.x;
@@ -93,11 +88,9 @@ public class QLearning extends Driver {
 					car.startLocX = position.x;
 					car.startLocY = position.y;
 					drive(car, act.x, act.y);
-
 					Pair position2 = getPositionPair(car.positionX, car.positionY);
 					Pair velocity2 = getVelocityPair(position2, car.velocityX, car.velocityY);
-					System.out.println("Training Info:");
-					// printTrackConsole(trainTrack, i, car, act.x, act.y);
+					//if key exists
 					if (rewards.containsKey(position2)) {
 
 						// find max reward of actions
@@ -108,94 +101,129 @@ public class QLearning extends Driver {
 						double reward = getReward(trainTrack, position2.x, position2.y);
 						// calculate q
 						double newq = q + (alpha * (reward + (gamma * maxreward) - q));
-						System.out.println(position.x + " " + position.y + " " + velocity.x + " " + velocity.y + " "
-								+ act.x + " " + act.y + ": " + q + " " + newq);
+						super.get_logger().log(Level.INFO, "iteration: " + i + ", position: (" + position.x + "," + position.y + "), velocity: (" + velocity.x + "," + velocity.y + "), acceleration: ("
+								+ act.x + "," + act.y + "), old reward: " + q + ", new reward: " + newq);
 						// add q to rewards hashmap
 						rewards.get(position).get(velocity).put(act, newq);
 					} else {
-						// HashMap<Pair, Double> bad = new HashMap<Pair,
-						// Double>();
-						// bad.put(act, -10000.0);
-						// HashMap<Pair, HashMap<Pair, Double>> bad2 = new
-						// HashMap<Pair, HashMap<Pair, Double>>();
-						// bad2.put(velocity2, bad);
-						// rewards.put(position2, bad2);
-						System.out.println("BAD MOVES:" + position2.x + " " + position2.y + " , " + velocity2.x + " "
+						//invalid move! should be caught by collision detection
+						super.get_logger().log(Level.INFO, "BAD MOVES:" + position2.x + " " + position2.y + " , " + velocity2.x + " "
 								+ velocity2.y);
 					}
 				}
 
 			}
-			// car.training = false;
-
-			runthrough();
+			//evaluate learning so far
+			runthrough(i);
 		}
-		System.out.println(finishingCars);
+		super.get_logger().log(Level.INFO, "Number of cars that made it to the finish line: " + finishingCars);
+		
 
 	}
 
 	void test() {
-		// TODO Auto-generated method stub
+		//test q-learning
+		ti = runthrough2();
 	}
 
-	void runthrough() {
-		System.out.println("Iteration Info");
-		String[][] tracks = copyOf(cleanTrack);
+	void runthrough(int it) {
+		super.get_logger().log(Level.INFO, "Iteration Info");
+		String[][] tracks = copyOf(cleanTrack);//new clean track for evaluation
 		Car testCar;
 		try {
 			testCar = new Car(tracks, crashName);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-
-			System.out.println("Car failed to initialize");
+			//if testCar fails to initialize end method
+			super.get_logger().log(Level.INFO, "Car failed to initialize");
 			return;
 		}
-		testCar.putCarAtStart();
-		// testCar.carCrashes = 0;
-
+		testCar.putCarAtStart();//start testCar
+		
 		Pair pos = getPositionPair(testCar.positionX, testCar.positionY);
 		Pair vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
 		boolean raceover = false;
 		int t = 0;
-		int max0 = 0;
-		// System.out.println(raceover + " " + t + " " + badMoves + " " +
-		// badMovesLimit + " car crashes: " + car.carCrashes);
-		while (!raceover && testCar.carCrashes <= 100 && max0 < 100) {
-			System.out.println(t);
-			System.out.println(raceover + " " + t + " car crashes: " + testCar.carCrashes);
-			System.out.println();
-			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {
-				Pair maxact = getMaxAction(rewards.get(pos).get(vel));
-				if(maxact.x==0 && maxact.y ==0){
+		int max0 = 0;//if the algorithm uses the accel (0,0) 25 times in a row, end the test
+		while (!raceover && testCar.carCrashes <= 100 && max0 < 25) {//if the car gets to the finish line
+			//or if the car has crashed 100 times, end the test
+			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
+				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
+				if(maxact.x==0 && maxact.y ==0){ 
+					max0++; // increment max0 if warranted
+				}
+				if(maxact.x != 0 || maxact.y != 0){
+					max0 = 0;// reset max0 if one (or both) accel values are not 0
+				}
+				raceover = drive(testCar, maxact.x, maxact.y);//move car
+				
+				pos = getPositionPair(testCar.positionX, testCar.positionY);//set position and velocity to current position and velocity
+				vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
+				
+				super.get_logger().log(Level.INFO, "time step: " + t);
+				System.out.println(t + " " + it);
+			} else {
+				//invalid move! should be caught by collision detection
+				super.get_logger().log(Level.INFO, "BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
+			}
+			t++;
+
+		}
+		if (raceover) {
+			finishingCars++; // increment finished cars if the car reaches the finish line
+			super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!! I WIN ALL THE THINGS!!!!");
+		}
+	}
+	public int runthrough2() {
+		super.get_logger().log(Level.INFO, "Test Info");
+		String[][] tracks = copyOf(testTrack);
+		Car testCar;
+		try {
+			testCar = new Car(tracks, crashName);
+		} catch (IOException e) {
+			//if testCar fails to initialize end method
+			e.printStackTrace();
+			super.get_logger().log(Level.INFO, "Car failed to initialize");
+			return 0;
+		}
+		testCar.putCarAtStart();//start testCar
+		
+		Pair pos = getPositionPair(testCar.positionX, testCar.positionY);
+		Pair vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
+		boolean raceover = false;
+		int t = 0;
+		int max0 = 0; //if the algorithm uses the accel (0,0) 25 times in a row, end the test
+		while (!raceover && testCar.carCrashes <= 100 && max0 < 100) {//if the car gets to the finish line
+			//or if the car has crashed 100 times, end the test
+			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
+				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
+				if(maxact.x==0 && maxact.y ==0){// increment max0 if warranted
 					max0++;
 				}
 				if(maxact.x != 0 || maxact.y != 0){
-					max0 = 0;
+					max0 = 0;// reset max0 if one (or both) accel values are not 0
 				}
 				raceover = drive(testCar, maxact.x, maxact.y);
-				// if(car.positionX == pos.x && car.positionY == pos.y){
-				// System.out.println(car.positionX + " "+ pos.x + " " +
-				// car.positionY + " " + pos.y);
-				// }
+				
 				pos = getPositionPair(testCar.positionX, testCar.positionY);
 				vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
-				// System.out.println(rewards.get(pos).get(vel).get(maxact));
-				printTrackConsole(tracks, t, car, maxact.x, maxact.y);
+				
+				super.get_logger().log(Level.INFO, "timestep: " + t);
+				printTrack(tracks, t, testCar, maxact.x, maxact.y);
 
 			} else {
-				System.out.println("BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
-
-				// printRewards();
-
+				//invalid move! should be caught by collision detection
+				super.get_logger().log(Level.INFO, "BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
 			}
 			t++;
 
 		}
 		if (raceover) {
 			finishingCars++;
-			System.out.println("Car FINISHEDDDD!!!!");
+			super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!!");
 		}
+		testCars = testCar;
+		return t;
 	}
 
 	void initialize() {
@@ -219,7 +247,6 @@ public class QLearning extends Driver {
 							Pair act = new Pair(m, n);
 							tertiary.put(act, -1.0);
 							// create a HashMap with each value equal to -1
-
 						}
 					}
 					intermediate.put(vel, tertiary);
@@ -229,9 +256,8 @@ public class QLearning extends Driver {
 			rewards.put(pos, intermediate);
 
 		}
-		// System.out.println(rewards.keySet().size());
 		int[][] flocs = car.finishLocs;
-		// for each open position:
+		// for each finish position:
 		for (int i = 0; i < flocs.length; i++) {
 			// create a HashMap
 			Pair pos = new Pair(flocs[i][0], flocs[i][1]);
@@ -258,10 +284,9 @@ public class QLearning extends Driver {
 			rewards.put(pos, intermediate);
 
 		}
-		// System.out.println(rewards.keySet().size());
 		int[][] slocs = car.startLocs;
 
-		// for each open position:
+		// for each start position:
 		for (int i = 0; i < slocs.length; i++) {
 			// create a HashMap
 			Pair pos = new Pair(slocs[i][0], slocs[i][1]);
@@ -288,17 +313,13 @@ public class QLearning extends Driver {
 			rewards.put(pos, intermediate);
 
 		}
-		// System.out.println(rewards.keySet().size());
-
+		
 	}
 
 	private double getReward(String[][] track, int x, int y) {
-		// if(x >= track.length || y >= track[x].length){
-		// return -1.0;
-		// }else
-		if (track[y][x].equals("F")) {
+		if (track[y][x].equals("F")) {//if at finish
 			return 0.0;
-		} else {
+		} else {//everything else
 			return -1.0;
 		}
 	}
@@ -309,7 +330,8 @@ public class QLearning extends Driver {
 		super.get_logger().log(Level.INFO, "");
 	}
 
-	private Pair getPositionPair(int x, int y) {
+	private Pair getPositionPair(int x, int y) {//get the position. Used to handle the issue where Pair object x and y 
+		//values are identical to a key in the hashmap, but the objects are not the same objects
 		ArrayList<Pair> positions = new ArrayList<Pair>(rewards.keySet());
 		Pair testPair = new Pair(x, y);
 		for (Pair p : positions) {
@@ -320,7 +342,8 @@ public class QLearning extends Driver {
 		return null;
 	}
 
-	private Pair getVelocityPair(Pair p, int x, int y) {
+	private Pair getVelocityPair(Pair p, int x, int y) {//get the velocity Pair. Used to handle the issue where Pair object x and y 
+		//values are identical to a key in the hashmap, but the objects are not the same objects
 		ArrayList<Pair> velocities = new ArrayList<Pair>(rewards.get(p).keySet());
 		Pair testPair = new Pair(x, y);
 		for (Pair v : velocities) {
@@ -331,7 +354,8 @@ public class QLearning extends Driver {
 		return null;
 	}
 
-	private Pair getActionPair(Pair p, Pair v, int x, int y) {
+	private Pair getActionPair(Pair p, Pair v, int x, int y) {//get the acceleration Pair. Used to handle the issue where Pair object x and y 
+		//values are identical to a key in the hashmap, but the objects are not the same objects
 		ArrayList<Pair> actions = new ArrayList<Pair>(rewards.get(p).get(v).keySet());
 		Pair testPair = new Pair(x, y);
 		for (Pair a : actions) {
@@ -342,7 +366,7 @@ public class QLearning extends Driver {
 		return null;
 	}
 
-	private Double getMaxValue(HashMap<Pair, Double> actionMap) {
+	private Double getMaxValue(HashMap<Pair, Double> actionMap) {//get the maximum reward
 		HashMap.Entry<Pair, Double> maxEntry = null;
 
 		for (HashMap.Entry<Pair, Double> entry : actionMap.entrySet()) {
@@ -353,14 +377,12 @@ public class QLearning extends Driver {
 		return maxEntry.getValue();
 	}
 
-	private Pair getMaxAction(HashMap<Pair, Double> actionMap) {
+	private Pair getMaxAction(HashMap<Pair, Double> actionMap) {//get the action with the maximum reward
 		HashMap.Entry<Pair, Double> maxEntry = null;
 
 		for (HashMap.Entry<Pair, Double> entry : actionMap.entrySet()) {
 			if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
-				// if(maxEntry == null || entry.getValue() != -1){
 				maxEntry = entry;
-				// }
 			}
 		}
 		return maxEntry.getKey();
