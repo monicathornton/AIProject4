@@ -133,10 +133,14 @@ public class RunModels {
 		
 		if (algoChoice.equals("v")) {
 			// call algo with track data
+			//TODO: run algo choice (at least) 10 times
+			//TODO: run on R 10 times per with both types of crashing
 			Driver v = new ValueIteration(racetrack, algoName, trackName, crashName, crashChoice);
 			
 		} else if (algoChoice.equals("q")) {
 			// call algo with track data
+			//TODO: run algo (at least) 10 times
+			//TODO: run on R 10 times per with both types of crashing
 			Driver q = new QLearning(racetrack, algoName, trackName, crashName);			
 			
 		} 
