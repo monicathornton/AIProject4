@@ -25,7 +25,6 @@ public class RunModels {
 
 		// gives the user algorithm choices, forces them to choose from the list
 		while (!algoChoice.equalsIgnoreCase("v") && !algoChoice.equalsIgnoreCase("q")) {
-//
 			System.out.println("***Please pick from one of the following algorithms***");
 			System.out.println("To race a car using Value Iteration, please type 'v'");
 			System.out.println("To race a car using Q-learning, please type 'q'");
@@ -40,50 +39,48 @@ public class RunModels {
 				System.out.println();
 			}
 		} // end while: user has picked a valid algo choice
-		//algoChoice = "v";
 
-//		// gives the user a series of track choices, forces them to choose from the list
-//		while (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {
-//			System.out.println("***Please pick a racetrack***");
-//			System.out.println("To select the L-track please type 'l'");
-//			System.out.println("To select the O-track please type 'o'");
-//			System.out.println("To select the R-track please type 'r'");
-//			System.out.println("To select the training track please type 't'");
-//			System.out.println("To select the simple track please type 's'");
-//
-//			// holds the user's choice of track
-//			trackChoice = in.nextLine().toLowerCase();
-//
-//			if (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {
-//				System.out.println(trackChoice + " is an invalid choice for the racetrack, please choose again.");
-//				System.out.println();
-//			} else {
-//				System.out.println();
-//			}
-//
-//		} // end while: user has picked a valid track choice
-		trackChoice = "s";
+		// gives the user a series of track choices, forces them to choose from the list
+		while (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {
+			System.out.println("***Please pick a racetrack***");
+			System.out.println("To select the L-track please type 'l'");
+			System.out.println("To select the O-track please type 'o'");
+			System.out.println("To select the R-track please type 'r'");
+			System.out.println("To select the tuning track please type 't'");
+			System.out.println("To select the simple track please type 's'");
+
+			// holds the user's choice of track
+			trackChoice = in.nextLine().toLowerCase();
+
+			if (!trackChoice.equalsIgnoreCase("l") && !trackChoice.equalsIgnoreCase("o") && !trackChoice.equalsIgnoreCase("r") && !trackChoice.equalsIgnoreCase("t") && !trackChoice.equalsIgnoreCase("s")) {
+				System.out.println(trackChoice + " is an invalid choice for the racetrack, please choose again.");
+				System.out.println();
+			} else {
+				System.out.println();
+			}
+
+		} // end while: user has picked a valid track choice
 		
-//		// gives the user the crash choices, forces them to choose from the list
-//		while (!crashChoice.equalsIgnoreCase("b") && !crashChoice.equalsIgnoreCase("w") && !crashChoice.equalsIgnoreCase("x")) {
-//
-//			System.out.println("***Please indicate the severity of crashing***");
-//			System.out.println("If crashing places the car back at the crash site type 'b'");
-//			System.out.println("If crashing places the car back at the beginning type w'");
-//			System.out.println("Type 'x' to exit the program");
-//
-//			// holds the user's choice of crash variation
-//			crashChoice = in.nextLine().toLowerCase();
-//
-//			if (!crashChoice.equalsIgnoreCase("b") && !crashChoice.equalsIgnoreCase("w") && !crashChoice.equalsIgnoreCase("x")) {
-//				System.out.println(crashChoice + " is an invalid choice for crash variation, please choose again.");
-//				System.out.println();
-//			} else {
-//				System.out.println();
-//			}
-//
-//
-//		} // end while: user has picked a valid crash choice
+		// gives the user the crash choices, forces them to choose from the list
+		while (!crashChoice.equalsIgnoreCase("b") && !crashChoice.equalsIgnoreCase("w") && !crashChoice.equalsIgnoreCase("x")) {
+
+			System.out.println("***Please indicate the severity of crashing***");
+			System.out.println("If crashing places the car back at the crash site type 'b'");
+			System.out.println("If crashing places the car back at the beginning type w'");
+			System.out.println("Type 'x' to exit the program");
+
+			// holds the user's choice of crash variation
+			crashChoice = in.nextLine().toLowerCase();
+
+			if (!crashChoice.equalsIgnoreCase("b") && !crashChoice.equalsIgnoreCase("w") && !crashChoice.equalsIgnoreCase("x")) {
+				System.out.println(crashChoice + " is an invalid choice for crash variation, please choose again.");
+				System.out.println();
+			} else {
+				System.out.println();
+			}
+
+
+		} // end while: user has picked a valid crash choice
 		crashChoice = "b";
 		
 		// associates the user's choices with names of algorithm, track & crash type
@@ -107,7 +104,7 @@ public class RunModels {
 			trackName = "R-track";
 			break;
 		case "t":
-			trackName = "Training-track";
+			trackName = "Tuning-track";
 			break;		
 		case "s":
 			trackName = "Simple-track";
@@ -137,8 +134,6 @@ public class RunModels {
 		if (algoChoice.equals("v")) {
 			// call algo with track data
 			Driver v = new ValueIteration(racetrack, algoName, trackName, crashName, crashChoice);
-			
-			// TODO: call racecar in each algo (crashName tells us which crash variant to use) - pass data and crashName (or corresponding Boolean)
 			
 		} else if (algoChoice.equals("q")) {
 			// call algo with track data

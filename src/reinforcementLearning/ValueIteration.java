@@ -52,8 +52,12 @@ public class ValueIteration extends Driver {
     private HashMap<String, Double> states = new HashMap<>(); //cell xy then velocity xy -> utility
     private final double successfulMove = .8;
     private final double stayInPlace = .2;
-    private final double gamma = .05; //prefer long term rewards
-    private final double error = .001;
+    
+    // appropriate values of gamma and error were determined by pruning process
+    // selected values for gamma and error that gave best results on tuning track 
+    private final double gamma = .07; //prefer long term rewards
+    private final double error = 0.000000001;
+    
     private HashMap<String, ArrayList> policy = new HashMap(); //state -> action
 
 
