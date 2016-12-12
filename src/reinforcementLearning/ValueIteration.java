@@ -75,7 +75,7 @@ public class ValueIteration extends Driver {
         super.get_logger().log(Level.INFO, "Started training.\n");
         train();
         super.get_logger().log(Level.INFO, "Done training.\n");
-        super.get_logger().log(Level.INFO, "Number of actionsPossibilities: " + actionsPossibilities.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size());
+        super.get_logger().log(Level.INFO, "Number of actions: " + actionsPossibilities.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size());
         super.get_logger().log(Level.INFO, "Gamma = " + gamma + "\nError " + error);
 
         //run car on track given information from optimal policy
