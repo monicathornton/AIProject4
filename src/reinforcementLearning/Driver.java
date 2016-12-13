@@ -47,7 +47,6 @@ public abstract class Driver {
     abstract void train();
     abstract void test();
  
-	// TODO: only let car crash 100 times	
     // Given the acceleration value from the algorithm (Value Iteration or Q-learning), drive the racecar.
     // There is a non-deterministic element to acceleration, where there is a 20% chance that the acceleration
     // will fail and the velocity will remain unchanged
