@@ -12,7 +12,7 @@ public class Car {
 	private String crashChoice;
 	
 	// logger for printing out info related to this car
-	Logger carLog = Logger.getLogger(Driver.class.getName());
+	//Logger carLog = Logger.getLogger(Driver.class.getName());
 
 	// keeps track of x and y locs in case of collision
 	private int xCrash = -1;
@@ -127,7 +127,6 @@ public class Car {
 	
 	}	
 
-	// TODO: fix finish line loc
 	// Checks if the car has crossed the finish line
 	public boolean endRace(int newX, int newY, int oldX, int oldY) {
 		boolean crossedFinish = false;
