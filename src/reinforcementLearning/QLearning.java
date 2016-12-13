@@ -27,7 +27,7 @@ public class QLearning extends Driver {
 	private int maxIter; //maximum iterations to run training
 	private int ti; //number of moves made by the testCar in the testing phase
 	private double alpha = 1; // learning rate
-	private double gamma = 0.9; // discount factor
+	private double gamma = 0.7; // discount factor
 	private int finishingCars; // how many cars in training reached the finish line
 
 	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;
@@ -50,16 +50,16 @@ public class QLearning extends Driver {
 			e.printStackTrace();
 		}
 
-		maxIter = 50000;//set maximum number of training iterations
+		maxIter = 300000;//set maximum number of training iterations
 		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
-		super.get_logger().log(Level.INFO, "Started training.\n");
+		//super.get_logger().log(Level.INFO, "Started training.\n");
         train();
-        super.get_logger().log(Level.INFO, "Done training.\n");
-        super.get_logger().log(Level.INFO, "Started testing.\n");
+        //super.get_logger().log(Level.INFO, "Done training.\n");
+        //super.get_logger().log(Level.INFO, "Started testing.\n");
         test();
-        super.get_logger().log(Level.INFO, "Done testing, algorithm complete.");
-        super.get_logger().log(Level.INFO, "Number of crashes: " + testCars.carCrashes + "\nNumber of timesteps: " + ti);
+        //super.get_logger().log(Level.INFO, "Done testing, algorithm complete.");
+        //super.get_logger().log(Level.INFO, "Number of crashes: " + testCars.carCrashes + "\nNumber of timesteps: " + ti);
         System.out.println(finishingCars);
 	}
 
@@ -101,8 +101,8 @@ public class QLearning extends Driver {
 						double reward = getReward(trainTrack, position2.x, position2.y);
 						// calculate q
 						double newq = q + (alpha * (reward + (gamma * maxreward) - q));
-						super.get_logger().log(Level.INFO, "iteration: " + i + ", position: (" + position.x + "," + position.y + "), velocity: (" + velocity.x + "," + velocity.y + "), acceleration: ("
-								+ act.x + "," + act.y + "), old reward: " + q + ", new reward: " + newq);
+						//super.get_logger().log(Level.INFO, "iteration: " + i + ", position: (" + position.x + "," + position.y + "), velocity: (" + velocity.x + "," + velocity.y + "), acceleration: ("
+						//		+ act.x + "," + act.y + "), old reward: " + q + ", new reward: " + newq);
 						// add q to rewards hashmap
 						rewards.get(position).get(velocity).put(act, newq);
 					} else {
@@ -114,9 +114,11 @@ public class QLearning extends Driver {
 
 			}
 			//evaluate learning so far
-			runthrough(i);
+			if(i%5 == 0){
+				runthrough(i);
+			}
 		}
-		super.get_logger().log(Level.INFO, "Number of cars that made it to the finish line: " + finishingCars);
+		//super.get_logger().log(Level.INFO, "Number of cars that made it to the finish line: " + finishingCars);
 		
 
 	}
@@ -127,7 +129,7 @@ public class QLearning extends Driver {
 	}
 
 	void runthrough(int it) {
-		super.get_logger().log(Level.INFO, "Iteration Info");
+		//super.get_logger().log(Level.INFO, "Iteration Info");
 		String[][] tracks = copyOf(cleanTrack);//new clean track for evaluation
 		Car testCar;
 		try {
@@ -145,7 +147,7 @@ public class QLearning extends Driver {
 		boolean raceover = false;
 		int t = 0;
 		int max0 = 0;//if the algorithm uses the accel (0,0) 25 times in a row, end the test
-		while (!raceover && testCar.carCrashes <= 100 && max0 < 25) {//if the car gets to the finish line
+		while (!raceover && testCar.carCrashes < 100 && max0 < 25 && t < maxIter) {//if the car gets to the finish line
 			//or if the car has crashed 100 times, end the test
 			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
 				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
@@ -160,19 +162,20 @@ public class QLearning extends Driver {
 				pos = getPositionPair(testCar.positionX, testCar.positionY);//set position and velocity to current position and velocity
 				vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
 				
-				super.get_logger().log(Level.INFO, "time step: " + t);
-				System.out.println(t + " " + it);
+				//super.get_logger().log(Level.INFO, "time step: " + t);
+				//System.out.println(t + " " + it);
 			} else {
 				//invalid move! should be caught by collision detection
-				super.get_logger().log(Level.INFO, "BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
+				//super.get_logger().log(Level.INFO, "BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
 			}
 			t++;
 
 		}
 		if (raceover) {
 			finishingCars++; // increment finished cars if the car reaches the finish line
-			super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!! I WIN ALL THE THINGS!!!!");
+			//super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!! I WIN ALL THE THINGS!!!!");
 		}
+		super.get_logger().log(Level.INFO, algoName + "," + trackName + "," + crashName + "," + "training" + "," + it + "," + t + "," + testCar.carCrashes);
 	}
 	public int runthrough2() {
 		super.get_logger().log(Level.INFO, "Test Info");
@@ -192,8 +195,8 @@ public class QLearning extends Driver {
 		Pair vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
 		boolean raceover = false;
 		int t = 0;
-		int max0 = 0; //if the algorithm uses the accel (0,0) 25 times in a row, end the test
-		while (!raceover && testCar.carCrashes <= 100 && max0 < 100) {//if the car gets to the finish line
+		int max0 = 0; //if the algorithm uses the accel (0,0) 100 times in a row, end the test
+		while (!raceover && max0 < 100 && t < maxIter) {//if the car gets to the finish line
 			//or if the car has crashed 100 times, end the test
 			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
 				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
@@ -208,20 +211,22 @@ public class QLearning extends Driver {
 				pos = getPositionPair(testCar.positionX, testCar.positionY);
 				vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
 				
-				super.get_logger().log(Level.INFO, "timestep: " + t);
-				printTrack(tracks, t, testCar, maxact.x, maxact.y);
+				//super.get_logger().log(Level.INFO, "timestep: " + t);
+				//printTrack(tracks, t, testCar, maxact.x, maxact.y);
 
 			} else {
 				//invalid move! should be caught by collision detection
-				super.get_logger().log(Level.INFO, "BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
+				//super.get_logger().log(Level.INFO, "BAD MOVES:" + pos.x + " " + pos.y + " , " + vel.x + " " + vel.y);
 			}
 			t++;
 
 		}
 		if (raceover) {
 			finishingCars++;
-			super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!!");
+			//super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!!");
 		}
+		super.get_logger().log(Level.INFO, algoName + "," + trackName + "," + crashName + "," + "testing" + "," + finishingCars + "," + t + "," + testCar.carCrashes);
+
 		testCars = testCar;
 		return t;
 	}
