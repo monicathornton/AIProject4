@@ -110,6 +110,7 @@ public class Car {
 
 			// checks if car has crossed finish line before crash
 			// bc a crash after the finish line does not end the race
+			// check if crashed into wall after finish			
 			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
 			if (!crossedFinish) {
@@ -162,9 +163,15 @@ public class Car {
 				    	if (!training) {
 							track[y][x] = "C";
 						}
-						positionX = x;
-						positionY = y;
-				    	crossedFinish = true;
+				    	
+				    	// checks if the new position goes through a wall, so the 
+				    	// car does not try any funny business
+				    	if (!collisionDetection(positionX, positionY, oldX, oldY)) {
+							positionX = x;
+							positionY = y;
+					    	crossedFinish = true;				    		
+				    	}
+				    	
 						}	    		
 			    	} // end for
 
