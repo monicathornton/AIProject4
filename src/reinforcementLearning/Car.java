@@ -260,7 +260,7 @@ public class Car {
 	public void crashHandler(String crashChoice, int oldX, int oldY, int newX, int newY) {
 		// increments the number of crashes
 		carCrashes++;
-		carLog.log(Level.INFO, "BOOM! Crashed into a wall at (" + xCrash + ", " + yCrash + "). Crash # " + carCrashes);
+		//carLog.log(Level.INFO, "BOOM! Crashed into a wall at (" + xCrash + ", " + yCrash + "). Crash # " + carCrashes);
 	
 		// calls appropriate crash method based on user specified crash choice 
 		if (crashChoice.equalsIgnoreCase("b")) {
@@ -340,7 +340,7 @@ public class Car {
 		if (!training) {
 			track[newY][newX] = "C";
 		}
-		carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
+		//carLog.log(Level.INFO, "After crash restart at (" + newX + ", " + newY + ")");
 	
 		
 		// updates the x and y position
@@ -355,7 +355,7 @@ public class Car {
 		velocityY = 0;
 		
 		// put car back at original starting location
-		carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
+		//carLog.log(Level.INFO, "After crash restart at (" + startLocX + ", " + startLocY + ")");
 		if (!training) {
 			track[startLocY][startLocX] = "C";
 		}
@@ -404,7 +404,7 @@ public class Car {
 		if (!training) {
 			track[startLocY][startLocX] = "C";
 		}
-		carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
+		//carLog.log(Level.INFO, "Car on start line at (" + startLocX + ", " + startLocY + ")");
 		
 	}
 	
