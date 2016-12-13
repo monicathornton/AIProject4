@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.*;
 
 /*
    Learning algorithm for optimizing a timed run of a racecar through differently shaped racetracks.
 */
 public class ValueIteration extends Driver {
+
     // holds the racetrack and variables selected by the user
     private String[][] trainTrack;
     private String[][] testTrack;
@@ -61,6 +64,8 @@ public class ValueIteration extends Driver {
         this.testTrack = copyOf(trainTrack);
         this.cleanTrack = copyOf(trainTrack);
 
+
+
         //run information
         this.algoName = algoName;
         this.trackName = trackName;
@@ -70,22 +75,24 @@ public class ValueIteration extends Driver {
         this.trainCar.setTraining();
         printTrackInfo(algoName, trackName, crashName);
 
-
         //train value iteration algorithm to obtain all utilities and an optimal policy
-        super.get_logger().log(Level.INFO, "Started training.\n");
+//        super.get_logger().log(Level.INFO, "Started training.\n");
         train();
-        super.get_logger().log(Level.INFO, "Done training.\n");
-        super.get_logger().log(Level.INFO, "Number of actions: " + actionsPossibilities.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size());
-        super.get_logger().log(Level.INFO, "Gamma = " + gamma + "\nError " + error);
+//        super.get_logger().log(Level.INFO, "Done training.\n");
+//        super.get_logger().log(Level.INFO, "Number of actions: " + actionsPossibilities.length + "\nNumber of velocity values: " + velocityPossibilities.length + "\nNumber of states: " + states.size());
+//        super.get_logger().log(Level.INFO, "Gamma = " + gamma + "\nError " + error);
 
         //run car on track given information from optimal policy
-        testCar = new Car(testTrack, crashChoice);
-        super.get_logger().log(Level.INFO, "Started testing.\n");
+//        super.get_logger().log(Level.INFO, "Started testing.\n");
         test();
-        super.get_logger().log(Level.INFO, "Done testing, algorithm complete.");
-        super.get_logger().log(Level.INFO, "Number of crashes: " + testCar.carCrashes + "\nNumber of timesteps: " + t);
+//        super.get_logger().log(Level.INFO, "Done testing, algorithm complete.");
+//        super.get_logger().log(Level.INFO, "Number of crashes: " + testCar.carCrashes + "\nNumber of timesteps: " + t);
+
+        super.get_logger().log(Level.INFO, "ValueIteration," + trackName + "," + crashName + "," + "testing," + "n/a" + "," + t + "," + testCar.carCrashes);
 
     }
+
+
 
     /*
         Create a deep copy of a 2d String array
@@ -115,6 +122,8 @@ public class ValueIteration extends Driver {
         Continue until change in states' utilities' is below a threshold.
      */
     private void valueIterate() {
+        int iterationNumber = 0;
+        int numActions = 0;
         //difference in former and updated utility
         double delta = 0;
         double threshold = error * (1 - gamma) / gamma;
@@ -137,10 +146,17 @@ public class ValueIteration extends Driver {
 
                 double maxActionUtility = 0.0;
                 //set car in approriate state
-                setTrainState(state);
 
                 // get action that returns best utility
                 for (String action : actionsPossibilities) {
+                    try {
+                        setTrainState(state);
+                    }
+                    catch (Exception e){
+
+                    }
+
+                    numActions += 1;
                     //reset track
                     trainTrack = copyOf(cleanTrack);
 
@@ -161,6 +177,9 @@ public class ValueIteration extends Driver {
 
                 //Put new utility into states
                 states.put(state, UPrime);
+                test();
+                super.get_logger().log(Level.INFO, "ValueIteration," + trackName + "," + crashName + "," + "training," + iterationNumber + "," + t + "," + testCar.carCrashes);
+                iterationNumber++;
 
 
                 // update delta
@@ -173,6 +192,7 @@ public class ValueIteration extends Driver {
                 }
 
             }
+
         }
     }
 
@@ -183,14 +203,19 @@ public class ValueIteration extends Driver {
      */
     void test() {
         //setup and show track
+        try {
+            testCar = new Car(testTrack, crashChoice);
+        }
+        catch (IOException e){
 
+        }
         int sameSpot = 0;
         String oldSpot = "00";
         boolean finished = false;
         t = 0;
 
         testCar.putCarAtStart();
-        printTrack(testTrack, t, testCar, 0, 0);
+//        printTrack(testTrack, t, testCar, 0, 0);
 
         //finished is defined as being on or crossing a finished cell
         while (!finished) {
@@ -228,7 +253,7 @@ public class ValueIteration extends Driver {
 
             //update values and print track
             t++;
-            printTrack(testTrack, t, testCar, xa, ya);
+//            printTrack(testTrack, t, testCar, xa, ya);
             oldSpot = String.format("%d%d", testCar.positionY, testCar.positionX);
         }
     }
@@ -303,7 +328,9 @@ public class ValueIteration extends Driver {
     /*
         Put the car in a new state. Used for training.
      */
-    private void setTrainState(String curState) {
+    private void setTrainState(String curState) throws IOException {
+        this.trainCar = new Car(trainTrack, crashChoice);
+        t = 0;
         String[] stateParts = curState.split(",");
 
         this.trainCar.positionX = Integer.valueOf(stateParts[1]);
@@ -355,7 +382,12 @@ public class ValueIteration extends Driver {
         ArrayList<String> allAction = new ArrayList();
         //for every state
         for (String state : states.keySet()) {
-            setTrainState(state);
+            try {
+                setTrainState(state);
+            }
+            catch (Exception e){
+
+            }
             double maxUtility = -10000.0;
             String bestAction = "00";
             //   for every action
