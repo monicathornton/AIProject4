@@ -122,8 +122,6 @@ public class ValueIteration extends Driver {
         Continue until change in states' utilities' is below a threshold.
      */
     private void valueIterate() {
-        int iterationNumber = 0;
-        int numActions = 0;
         //difference in former and updated utility
         double delta = 0;
         double threshold = error * (1 - gamma) / gamma;
@@ -156,7 +154,6 @@ public class ValueIteration extends Driver {
 
                     }
 
-                    numActions += 1;
                     //reset track
                     trainTrack = copyOf(cleanTrack);
 
@@ -177,10 +174,6 @@ public class ValueIteration extends Driver {
 
                 //Put new utility into states
                 states.put(state, UPrime);
-                test();
-                super.get_logger().log(Level.INFO, "ValueIteration," + trackName + "," + crashName + "," + "training," + iterationNumber + "," + t + "," + testCar.carCrashes);
-                iterationNumber++;
-
 
                 // update delta
                 if (Math.abs(UPrime - U) > delta) {
@@ -218,7 +211,8 @@ public class ValueIteration extends Driver {
 //        printTrack(testTrack, t, testCar, 0, 0);
 
         //finished is defined as being on or crossing a finished cell
-        while (!finished) {
+        //put upperbound on how long car can try to finish the track
+        while (!finished && t < 13000) {
             //get current state, ie position and x and y velocities
             String curState = String.format("%d,%d,%d,%d", testCar.positionY, testCar.positionX, testCar.velocityX, testCar.velocityY);
 
@@ -231,6 +225,10 @@ public class ValueIteration extends Driver {
 
             //get best actions as defined by policy
             ArrayList<String> preferredActions = policy.get(curState);
+            if (preferredActions == null){
+                preferredActions = new ArrayList<>();
+                preferredActions.add("1,1");
+            }
             Random r = new Random();
 
             //Don't get stuck in death loop (anyone seen supernatural?)
@@ -379,6 +377,7 @@ public class ValueIteration extends Driver {
      */
     private void createPolicy() {
 
+        int iterationNumber = 0;
         ArrayList<String> allAction = new ArrayList();
         //for every state
         for (String state : states.keySet()) {
@@ -404,6 +403,10 @@ public class ValueIteration extends Driver {
             }
             //update policy and reset for next state
             policy.put(state, allAction);
+            test();
+            super.get_logger().log(Level.INFO, "ValueIteration," + trackName + "," + crashName + "," + "training," + iterationNumber + "," + t + "," + testCar.carCrashes);
+
+            iterationNumber++;
             allAction = new ArrayList<>();
         }
     }
