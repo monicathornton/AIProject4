@@ -154,9 +154,6 @@ public class ValueIteration extends Driver {
 
                     }
 
-                    //reset track
-                    trainTrack = copyOf(cleanTrack);
-
                     //get utilities of new states according to probability distribution
                     double temp = calcTransition(state, action);
 
@@ -198,6 +195,7 @@ public class ValueIteration extends Driver {
         //setup and show track
         try {
             testCar = new Car(testTrack, crashChoice);
+            testTrack = copyOf(cleanTrack);
         }
         catch (IOException e){
 
@@ -296,9 +294,11 @@ public class ValueIteration extends Driver {
         String[] actionParts = action.split(",");
         int xa = Integer.valueOf(actionParts[0]);
         int ya = Integer.valueOf(actionParts[1]);
+        trainTrack = copyOf(cleanTrack);
 
         //actual movement of car
         this.trainCar.newPosition(xa, ya);
+
 
         //Calculate new state. If car is in wall or crashed, velocities should always be 0 0.
         String newState;
@@ -403,8 +403,10 @@ public class ValueIteration extends Driver {
             }
             //update policy and reset for next state
             policy.put(state, allAction);
-            test();
-            super.get_logger().log(Level.INFO, "ValueIteration," + trackName + "," + crashName + "," + "training," + iterationNumber + "," + t + "," + testCar.carCrashes);
+            if (iterationNumber%5 == 0) {
+                test();
+                super.get_logger().log(Level.INFO, "ValueIteration," + trackName + "," + crashName + "," + "training," + iterationNumber + "," + t + "," + testCar.carCrashes);
+            }
 
             iterationNumber++;
             allAction = new ArrayList<>();
