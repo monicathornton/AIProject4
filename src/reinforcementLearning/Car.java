@@ -113,12 +113,9 @@ public class Car {
 			// check if crashed into wall after finish			
 			crossedFinish = endRace(newX, newY, oldX, oldY); 
 			
-			
-			
-			
 			if (!crossedFinish) {
 				// places an X on the track to show where the car has crashed on its run
-				//track[yCrash][xCrash] = "X";
+				track[yCrash][xCrash] = "X";
 				
 				// calls the crash handler, which deals with the specifics of the car crash 
 				crashHandler(crashChoice, oldX, oldY, newX, newY);					
@@ -167,13 +164,14 @@ public class Car {
 							track[y][x] = "C";
 						}
 				    	
+				    	// checks if the new position goes through a wall, so the 
+				    	// car does not try any funny business
 				    	if (!collisionDetection(positionX, positionY, oldX, oldY)) {
 							positionX = x;
 							positionY = y;
 					    	crossedFinish = true;				    		
 				    	}
 				    	
-
 						}	    		
 			    	} // end for
 
