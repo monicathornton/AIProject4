@@ -151,15 +151,15 @@ public class QLearning extends Driver {
 			if(i%sampleSize == 0){
 				besthashmap = runthrough(i);
 			}
-//			if(besthashmap){
-//				besthashmap2 = runthrough(i);
-//				if(besthashmap2){
-//					besthashmap3 = runthrough(i);
-//					if(besthashmap3){
-//						break;
-//					}
-//				}
-//			}
+			if(besthashmap){
+				besthashmap2 = runthrough(i);
+				if(besthashmap2){
+					besthashmap3 = runthrough(i);
+					if(besthashmap3){
+						break;
+					}
+				}
+			}
 		}
 		//super.get_logger().log(Level.INFO, "Number of cars that made it to the finish line: " + finishingCars);
 		
@@ -241,7 +241,7 @@ public class QLearning extends Driver {
 		boolean raceover = false;
 		int t = 0;
 		int max0 = 0; //if the algorithm uses the accel (0,0) 100 times in a row, end the test
-		while (!raceover && max0 < 100 && t < maxIter && max0 < 100 && testCar.carCrashes < 100) {//if the car gets to the finish line
+		while (!raceover && max0 < 100 && t < maxIter){// && testCar.carCrashes < 100) {//if the car gets to the finish line
 			//or if the car has crashed 100 times, end the test
 			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
 				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward

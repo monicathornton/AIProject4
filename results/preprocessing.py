@@ -19,13 +19,14 @@ def removeHeader(fp, fpstr, tfpstr):
             next(datareader)
             next(datareader)
             for row in datareader:
+                #print(row)
                 if row[3] == 'testing':
                     createTestFile(tfpstr, row)
                     #write to testfile
                 else:
                     #write to curvefile
                     curvewriter.writerow(row)
-        curvewriter.close()
+        curvefile.close()
                     
 
 
@@ -33,7 +34,7 @@ def createTestFile(fpstr, arr):
     with open(fpstr, "a") as test_file:
         testwriter = csv.writer(test_file, delimiter=",", quotechar="|")
         testwriter.writerow(arr)
-        testwriter.close
+        test_file.close
     
 def main():
     partpath = "C:\\Users\\Jani\\Documents\\ArtificialIntelligence\\AIProject4\\experimentruns"
