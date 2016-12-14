@@ -223,7 +223,7 @@ public class QLearning extends Driver {
 		return false;
 	}
 	public int runthrough2() {
-		super.get_logger().log(Level.INFO, "Test Info");
+		//super.get_logger().log(Level.INFO, "Test Info");
 		String[][] tracks = copyOf(testTrack);
 		Car testCar;
 		try {
