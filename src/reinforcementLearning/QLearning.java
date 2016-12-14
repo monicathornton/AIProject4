@@ -270,7 +270,7 @@ public class QLearning extends Driver {
 			finishingCars++;
 			//super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!!");
 		}
-		super.get_logger().log(Level.INFO, algoName + "," + trackName + "," + crashName + "," + "testing" + "," + finishingCars + "," + t + "," + testCar.carCrashes);
+		super.get_logger().log(Level.INFO, algoName + "," + trackName + "," + crashName + "," + "testing" + "," + "n/a" + "," + t + "," + testCar.carCrashes);
 
 		testCars = testCar;
 		return t;
