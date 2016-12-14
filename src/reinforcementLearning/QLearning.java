@@ -3,6 +3,8 @@ package reinforcementLearning;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 /*
@@ -27,7 +29,7 @@ public class QLearning extends Driver {
 	private int maxIter; //maximum iterations to run training
 	private int ti; //number of moves made by the testCar in the testing phase
 	private double alpha = 1; // learning rate
-	private double gamma = 0.9; // discount factor
+	private double gamma = 1; // discount factor
 	private int finishingCars; // how many cars in training reached the finish line
 
 	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;
@@ -50,7 +52,7 @@ public class QLearning extends Driver {
 			e.printStackTrace();
 		}
 
-		maxIter = 500000;//set maximum number of training iterations
+		maxIter = 1000000;//set maximum number of training iterations
 		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
 		//super.get_logger().log(Level.INFO, "Started training.\n");
@@ -64,20 +66,47 @@ public class QLearning extends Driver {
 	}
 
 	void train() {
-		int sampleSize = 5;
+		Random r = new Random();
+		int sampleSize = 12;
+		int prevDist = -1;
+		//int scount = 0;
 		initialize(); // fill the rewards map with initial values
 		finishingCars = 0;
+		int[][] olocs = car.openLocs;
+		int[][] nlocs = new int[olocs.length + car.startLocs.length][];
+		for(int j = 0; j < olocs.length; j++){
+			nlocs[j] = olocs[j];
+		}
+		for(int j = olocs.length; j < car.startLocs.length + olocs.length; j++){
+			nlocs[j] = car.startLocs[j-olocs.length];
+		}
+		int[][] flocs = car.finishLocs;
 		for (int i = 0; i < maxIter; i++) {
-			alpha = alpha - 1/maxIter;//anneal learning rate
+			if(alpha > 0.1){
+				alpha = alpha - 2/maxIter;//anneal learning rate
+			}else{
+				alpha=0.1;
+			}
 			car.setTraining();
 			// select Position
-			ArrayList<Pair> positions = new ArrayList<Pair>(rewards.keySet());
+			//ArrayList<Pair> positions = new ArrayList<Pair>(rewards.keySet());
 			//Pair position = positions.get((int) Math.floor(Math.random() * positions.size()));
 			int d = (int)(sampleSize*Math.floor(i/sampleSize));
-			Pair position = findPairWithin(d, car.openLocs, car.finishLocs);
+			
+			nlocs = shuffleArray(nlocs);
+			//flocs = shuffleArray(flocs);
+			//shuffleArray(flocs);
+			Pair position = findPairWithin(d, flocs, nlocs, prevDist);
+			if(i <= nlocs.length*sampleSize){
+				prevDist = d;
+			}
+			else{
+				prevDist = 0;
+			}
+//			prevDist = d;
 			// select Velocity
-			int velocityx = (int) Math.floor(Math.random() * 11) - 5;
-			int velocityy = (int) Math.floor(Math.random() * 11) - 5;
+			int velocityx = r.nextInt(11)-5;
+			int velocityy = r.nextInt(11)-5;
 			boolean besthashmap = false;
 			boolean besthashmap2 = false;
 			boolean besthashmap3 = false;
@@ -107,7 +136,7 @@ public class QLearning extends Driver {
 						// calculate q
 						double newq = q + (alpha * (reward + (gamma * maxreward) - q));
 						//super.get_logger().log(Level.INFO, "iteration: " + i + ", position: (" + position.x + "," + position.y + "), velocity: (" + velocity.x + "," + velocity.y + "), acceleration: ("
-						//		+ act.x + "," + act.y + "), old reward: " + q + ", new reward: " + newq);
+							//	+ act.x + "," + act.y + "), old reward: " + q + ", new reward: " + newq);
 						// add q to rewards hashmap
 						rewards.get(position).get(velocity).put(act, newq);
 					} else {
@@ -122,15 +151,15 @@ public class QLearning extends Driver {
 			if(i%sampleSize == 0){
 				besthashmap = runthrough(i);
 			}
-			if(besthashmap){
-				besthashmap2 = runthrough(i);
-				if(besthashmap2){
-					besthashmap3 = runthrough(i);
-					if(besthashmap3){
-						break;
-					}
-				}
-			}
+//			if(besthashmap){
+//				besthashmap2 = runthrough(i);
+//				if(besthashmap2){
+//					besthashmap3 = runthrough(i);
+//					if(besthashmap3){
+//						break;
+//					}
+//				}
+//			}
 		}
 		//super.get_logger().log(Level.INFO, "Number of cars that made it to the finish line: " + finishingCars);
 		
@@ -186,7 +215,7 @@ public class QLearning extends Driver {
 
 		}
 		super.get_logger().log(Level.INFO, algoName + "," + trackName + "," + crashName + "," + "training" + "," + it + "," + t + "," + testCar.carCrashes);
-		if (testCar.carCrashes < 100 && max0 < 25 && t < maxIter) {
+		if (raceover) {
 			finishingCars++; // increment finished cars if the car reaches the finish line
 			return true;
 			//super.get_logger().log(Level.INFO, "Car FINISHEDDDD!!!! I WIN ALL THE THINGS!!!!");
@@ -266,7 +295,7 @@ public class QLearning extends Driver {
 					for (int m = -1; m <= 1; m++) {
 						for (int n = -1; n <= 1; n++) {
 							Pair act = new Pair(m, n);
-							tertiary.put(act, -1.0);
+							tertiary.put(act, -200.0);
 							// create a HashMap with each value equal to -1
 						}
 					}
@@ -322,7 +351,7 @@ public class QLearning extends Driver {
 					for (int m = -1; m <= 1; m++) {
 						for (int n = -1; n <= 1; n++) {
 							Pair act = new Pair(m, n);
-							tertiary.put(act, -1.0);
+							tertiary.put(act, -200.0);
 							// create a HashMap with each value equal to -1
 						}
 
@@ -392,7 +421,9 @@ public class QLearning extends Driver {
 
 		for (HashMap.Entry<Pair, Double> entry : actionMap.entrySet()) {
 			if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
-				maxEntry = entry;
+				//if(maxEntry == null || entry.getValue() != -1){
+					maxEntry = entry;
+				//}
 			}
 		}
 		return maxEntry.getValue();
@@ -403,7 +434,9 @@ public class QLearning extends Driver {
 
 		for (HashMap.Entry<Pair, Double> entry : actionMap.entrySet()) {
 			if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
-				maxEntry = entry;
+				//if(maxEntry == null || entry.getValue() != -1){
+					maxEntry = entry;
+				//}
 			}
 		}
 		return maxEntry.getKey();
@@ -449,12 +482,12 @@ public class QLearning extends Driver {
 		return ((int)Math.floor(dist));
 	}
 	
-	private Pair findPairWithin(int dist, int[][] finishLocs, int[][] openLocs){
+	private Pair findPairWithin(int dist, int[][] finishLocs, int[][] openLocs, int prevDist){
 		
 		for(int i = 0; i < openLocs.length; i++){
 			for(int j = 0; j < finishLocs.length; j++){
 				int d = integerDistance(openLocs[i][0], openLocs[i][1], finishLocs[j][0], finishLocs[j][1]);
-				if(d <= dist && d > 0){
+				if(d <= dist && d >= prevDist){
 					Pair p = getPositionPair(openLocs[i][0], openLocs[i][1]);
 					return p;
 				}
@@ -462,15 +495,28 @@ public class QLearning extends Driver {
 		}
 		int mindist = integerDistance(openLocs[0][0], openLocs[0][1], finishLocs[0][0], finishLocs[0][1]);
 		int[] nearestPair = openLocs[0];
-		for(int i = 0; i < openLocs.length; i++){
-			for(int j = 0; j < finishLocs.length; j++){
-				int d = integerDistance(openLocs[i][0], openLocs[i][1], finishLocs[j][0], finishLocs[j][1]);
-				if(d <= mindist){
-					mindist = d;
-					nearestPair = openLocs[i]; 
-				}
-			}
-		}
+//		for(int i = 0; i < openLocs.length; i++){
+//			for(int j = 0; j < finishLocs.length; j++){
+//				int d = integerDistance(openLocs[i][0], openLocs[i][1], finishLocs[j][0], finishLocs[j][1]);
+//				if(d <= mindist){
+//					mindist = d;
+//					nearestPair = openLocs[i]; 
+//				}
+//			}
+//		}
 		return getPositionPair(nearestPair[0], nearestPair[1]);
 	}
+	private int[][] shuffleArray(int[][] ar){
+	    // If running on Java 6 or older, use `new Random()` on RHS here
+	    Random r = new Random();
+	    for (int i = ar.length - 1; i > 0; i--)
+	    {
+	      int index = r.nextInt(i+1);
+	      // Simple swap
+	      int[] a = ar[index];
+	      ar[index] = ar[i];
+	      ar[i] = a;
+	    }
+	    return ar;
+	  }
 }
