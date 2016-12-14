@@ -52,7 +52,7 @@ public class QLearning extends Driver {
 			e.printStackTrace();
 		}
 
-		maxIter = 1000000;//set maximum number of training iterations
+		maxIter = 5000000;//set maximum number of training iterations
 		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
 		//super.get_logger().log(Level.INFO, "Started training.\n");
@@ -83,7 +83,7 @@ public class QLearning extends Driver {
 		int[][] flocs = car.finishLocs;
 		for (int i = 0; i < maxIter; i++) {
 			if(alpha > 0.1){
-				alpha = alpha - 2/maxIter;//anneal learning rate
+				alpha = alpha - 1/maxIter;//anneal learning rate
 			}else{
 				alpha=0.1;
 			}
@@ -190,7 +190,7 @@ public class QLearning extends Driver {
 		boolean raceover = false;
 		int t = 0;
 		int max0 = 0;//if the algorithm uses the accel (0,0) 25 times in a row, end the test
-		while (!raceover && testCar.carCrashes < 100 && max0 < 25 && t < maxIter) {//if the car gets to the finish line
+		while (!raceover && testCar.carCrashes < 100 && max0 < 25 && t < 13000) {//if the car gets to the finish line
 			//or if the car has crashed 100 times, end the test
 			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
 				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
