@@ -9,7 +9,7 @@ import csv
 
 
 def removeHeader(fp, fpstr, tfpstr):
-    print(fp)
+    #print(fp)
     print(fpstr)
     print(tfpstr)
     with open(fpstr, "w") as curvefile:
@@ -25,7 +25,7 @@ def removeHeader(fp, fpstr, tfpstr):
                     #write to testfile
                 else:
                     #write to curvefile
-                    curvewriter.writerow(row)
+                    curvewriter.writerow(row[4:])
         curvefile.close()
                     
 
@@ -33,7 +33,7 @@ def removeHeader(fp, fpstr, tfpstr):
 def createTestFile(fpstr, arr):
     with open(fpstr, "a") as test_file:
         testwriter = csv.writer(test_file, delimiter=",", quotechar="|")
-        testwriter.writerow(arr)
+        testwriter.writerow(arr[5:])
         test_file.close
     
 def main():
@@ -43,12 +43,16 @@ def main():
             pathfile = os.path.join(partpath, file)
             f = file.split(".")
             ftp = f[0]
-            ftp1 = ftp[:-1]
+            if ftp[-1:] == "0":
+                ftp1 = ftp[:-2]
+            else:
+                ftp1 = ftp[:-1]
             ftp1 = ftp1+".csv"
             ftp2 = ftp+"c.csv"
+            #print(ftp1)
             removeHeader(pathfile, ftp2, ftp1)
             
-            print(file)
+            #print(file)
             #runExperiments(pathfile)
 
 if __name__ == "__main__": main()
