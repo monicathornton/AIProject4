@@ -141,7 +141,7 @@ public class RunModels {
 			// call algo with track data
 			//TODO: run algo (at least) 10 times
 			//TODO: run on R 10 times per with both types of crashing
-			Driver q = new QLearning(racetrack, algoName, trackName, crashName);			
+			Driver q = new QLearning(racetrack, algoName, trackName, crashName, crashChoice);			
 			
 		} 
 
