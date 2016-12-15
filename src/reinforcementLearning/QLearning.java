@@ -52,7 +52,7 @@ public class QLearning extends Driver {
 			e.printStackTrace();
 		}
 
-		maxIter = 196100;//set maximum number of training iterations
+		maxIter = 192100;//set maximum number of training iterations
 		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
 		//super.get_logger().log(Level.INFO, "Started training.\n");
@@ -151,15 +151,15 @@ public class QLearning extends Driver {
 			if(i%sampleSize == 0){
 				besthashmap = runthrough(i);
 			}
-			if(besthashmap){
-				besthashmap2 = runthrough(i);
-				if(besthashmap2){
-					besthashmap3 = runthrough(i);
-					if(besthashmap3){
-						break;
-					}
-				}
-			}
+//			if(besthashmap){
+//				besthashmap2 = runthrough(i);
+//				if(besthashmap2){
+//					besthashmap3 = runthrough(i);
+//					if(besthashmap3){
+//						break;
+//					}
+//				}
+//			}
 		}
 		//super.get_logger().log(Level.INFO, "Number of cars that made it to the finish line: " + finishingCars);
 		
