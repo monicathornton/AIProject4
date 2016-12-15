@@ -259,7 +259,7 @@ public class QLearning extends Driver {
 				vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
 				
 				//super.get_logger().log(Level.INFO, "timestep: " + t);
-				printTrack(tracks, t, testCar, maxact.x, maxact.y);
+				//printTrack(tracks, t, testCar, maxact.x, maxact.y);
 
 			} else {
 				//invalid move! should be caught by collision detection
