@@ -52,7 +52,7 @@ public class QLearning extends Driver {
 			e.printStackTrace();
 		}
 
-		maxIter = 5000000;//set maximum number of training iterations
+		maxIter = 196100;//set maximum number of training iterations
 		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
 		//super.get_logger().log(Level.INFO, "Started training.\n");
@@ -67,7 +67,7 @@ public class QLearning extends Driver {
 
 	void train() {
 		Random r = new Random();
-		int sampleSize = 12;
+		int sampleSize = 50;
 		int prevDist = -1;
 		//int scount = 0;
 		initialize(); // fill the rewards map with initial values
