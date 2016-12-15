@@ -1,5 +1,4 @@
 Running Value Iteration on R-track with in situ restart on crash.
-
 ValueIteration,R-track,in situ restart on crash.,training,0,3300,1970
 ValueIteration,R-track,in situ restart on crash.,training,5,11736,7116
 ValueIteration,R-track,in situ restart on crash.,training,10,3219,2076
