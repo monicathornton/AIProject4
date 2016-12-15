@@ -25,7 +25,7 @@ def removeHeader(fp, fpstr, tfpstr):
                     #write to testfile
                 else:
                     #write to curvefile
-                    curvewriter.writerow(row[4:])
+                    curvewriter.writerow(row[5:])
         curvefile.close()
                     
 
