@@ -31,11 +31,12 @@ public class QLearning extends Driver {
 	private double alpha = 1; // learning rate
 	private double gamma = 1; // discount factor
 	private int finishingCars; // how many cars in training reached the finish line
+	private String crashChoice;
 
 	HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>> rewards;
 	// HashMap<Position, HashMap<Velocity, HashMap<Action, Reward>>>
 
-	public QLearning(String[][] trainTrack, String algoName, String trackName, String crashName) {
+	public QLearning(String[][] trainTrack, String algoName, String trackName, String crashName, String crashChoice) {
 		this.trainTrack = trainTrack;
 		testTrack = new String[trainTrack.length][];
 		cleanTrack = new String[trainTrack.length][];
@@ -45,6 +46,7 @@ public class QLearning extends Driver {
 		this.algoName = algoName;
 		this.trackName = trackName;
 		this.crashName = crashName;
+		this.crashChoice = crashChoice;
 		try {
 			car = new Car(trainTrack, crashName);
 		} catch (IOException e) {
@@ -52,7 +54,7 @@ public class QLearning extends Driver {
 			e.printStackTrace();
 		}
 
-		maxIter = 270250;//set maximum number of training iterations
+		maxIter = 360000;//set maximum number of training iterations
 		rewards = new HashMap<Pair, HashMap<Pair, HashMap<Pair, Double>>>(); //initialize rewards map
 		printTrackInfo(algoName, trackName, crashName);
 		//super.get_logger().log(Level.INFO, "Started training.\n");
@@ -176,7 +178,7 @@ public class QLearning extends Driver {
 		String[][] tracks = copyOf(cleanTrack);//new clean track for evaluation
 		Car testCar;
 		try {
-			testCar = new Car(tracks, crashName);
+			testCar = new Car(tracks, crashChoice);
 		} catch (IOException e) {
 			e.printStackTrace();
 			//if testCar fails to initialize end method
@@ -227,7 +229,7 @@ public class QLearning extends Driver {
 		String[][] tracks = copyOf(testTrack);
 		Car testCar;
 		try {
-			testCar = new Car(tracks, crashName);
+			testCar = new Car(tracks, crashChoice);
 		} catch (IOException e) {
 			//if testCar fails to initialize end method
 			e.printStackTrace();
@@ -241,7 +243,7 @@ public class QLearning extends Driver {
 		boolean raceover = false;
 		int t = 0;
 		int max0 = 0; //if the algorithm uses the accel (0,0) 100 times in a row, end the test
-		while (!raceover && max0 < 100 && t < maxIter){// && testCar.carCrashes < 100) {//if the car gets to the finish line
+		while (!raceover && t < 13000){// && testCar.carCrashes < 100) {//if the car gets to the finish line
 			//or if the car has crashed 100 times, end the test
 			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
 				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
@@ -257,7 +259,7 @@ public class QLearning extends Driver {
 				vel = getVelocityPair(pos, testCar.velocityX, testCar.velocityY);
 				
 				//super.get_logger().log(Level.INFO, "timestep: " + t);
-				//printTrack(tracks, t, testCar, maxact.x, maxact.y);
+				printTrack(tracks, t, testCar, maxact.x, maxact.y);
 
 			} else {
 				//invalid move! should be caught by collision detection
