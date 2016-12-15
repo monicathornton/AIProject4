@@ -1,5 +1,4 @@
 Running Value Iteration on R-track with restart at the beginning on crash.
-
 ValueIteration,R-track,restart at the beginning on crash.,training,0,13000,7571
 ValueIteration,R-track,restart at the beginning on crash.,training,5,13000,7598
 ValueIteration,R-track,restart at the beginning on crash.,training,10,13000,8619
