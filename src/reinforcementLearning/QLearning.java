@@ -192,7 +192,7 @@ public class QLearning extends Driver {
 		boolean raceover = false;
 		int t = 0;
 		int max0 = 0;//if the algorithm uses the accel (0,0) 25 times in a row, end the test
-		while (!raceover && testCar.carCrashes < 100 && max0 < 25 && t < 13000) {//if the car gets to the finish line
+		while (!raceover && t < 13000) {//if the car gets to the finish line
 			//or if the car has crashed 100 times, end the test
 			if (rewards.get(pos) != null && rewards.get(pos).get(vel) != null) {//if keys exist in rewards
 				Pair maxact = getMaxAction(rewards.get(pos).get(vel));//get the action with the maximum reward
